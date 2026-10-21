@@ -33,6 +33,7 @@ try {
   const text = `import assert from 'node:assert/strict';
 import { createCompiler } from 'wasmtypst/node';
 import { instantiate } from 'wasmtypst/core';
+import { HtmlPreview } from 'wasmtypst/html-preview';
 import { Preview } from 'wasmtypst/preview';
 import { registerMonaco } from 'wasmtypst/monaco';
 import { readFile } from 'node:fs/promises';
@@ -52,11 +53,12 @@ try{const r=await compiler.compile();assert.equal(r.success,true);assert.ok((awa
     `import {createCompiler, type CompileResult} from 'wasmtypst';
 import {createCompiler as nodeCompiler} from 'wasmtypst/node';
 import {instantiate} from 'wasmtypst/core';
+import {HtmlPreview} from 'wasmtypst/html-preview';
 import {Preview} from 'wasmtypst/preview';
 import {registerMonaco} from 'wasmtypst/monaco';
 const result: CompileResult = await (await nodeCompiler()).compile();
 const bytes: Uint8Array = await (await createCompiler()).pdf(result.revision);
-void [bytes,instantiate,Preview,registerMonaco];\n`,
+void [bytes,instantiate,Preview,HtmlPreview,registerMonaco];\n`,
   );
   execFileSync(
     resolve(root, "node_modules/.bin/tsc"),
@@ -75,6 +77,7 @@ void [bytes,instantiate,Preview,registerMonaco];\n`,
   );
   const files = output[0].files.map((f) => f.path);
   assert.ok(files.includes("dist/wasm/wasmtypst_bg.wasm"));
+  assert.ok(files.includes("dist/wasm/wasmtypst_bg.wasm.gz"));
   assert.ok(files.includes("LICENSES/typst-0.15.1/LICENSE"));
   assert.ok(files.includes("LICENSES/typst-assets-0.15.1/NOTICE"));
   assert.ok(

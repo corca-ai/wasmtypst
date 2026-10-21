@@ -59,7 +59,47 @@ is claimed.
 ## Adoption boundary
 
 The SDK removes the measured two-runtime/version mismatch and supplies actual
-browser export and frame-based source navigation. CorTeX integration has not
-been implemented. An adopting host still owns registry synchronization,
+browser export and frame-based source navigation. The initial 0.1.0 qualification did not include a CorTeX integration. An adopting host still owns registry synchronization,
 authorization, package caching, editor history, collaboration and renderer
 integration. The engine has no hidden application or backend dependency.
+
+## 0.2.0 production integration qualification
+
+The 2026-10-21 follow-up adds atomic replacement snapshots, independent semantic
+HTML compilation, a sandboxed HTML adapter, bounded input queues, resolver
+supersession/deadlines and latest-only CompilerSession scheduling with worker
+cancellation/recovery. Fifteen native integration cases and the real Node/WASM
+suite passed, including invalid-snapshot rollback and dependency-resolution
+races. The browser proof checks semantic heading/MathML rendering and blocked
+source-generated scripts in an opaque-origin iframe in all three engines.
+
+On the same local Node 24.18.0 host, the unchanged 16 MiB binary workload with a
+short edited equation document measured compile median 32.34 ms / p95 32.90 ms
+before cached per-file SHA-256 identities, and 0.32 ms / 0.54 ms afterward (25
+warm samples). Both had a 38,010,880-byte linear-memory high water mark. This is
+a targeted fingerprint-cost comparison, not a general 100x compiler claim.
+UTF-8 binary assets also no longer build an unused Typst syntax tree on admission.
+
+`bun run benchmark` now uses twelve sections of actual paragraphs, equations and
+tables. Twenty warm edits measured paginated p95 2.21 ms and semantic HTML p95
+5.52 ms without the binary; the later warmed asset scenario measured 1.08 ms and
+1.53 ms. The combined process peak RSS was 439,744 KiB and linear memory ended
+at 75,038,720 bytes. RSS includes Node, workers, compiled code, inputs and
+transient copies; this is not an isolated compiler heap measurement. Cold Node
+initialization was one 80 ms observation. CPU load and cache order affect results.
+
+Browser SVG edit-to-paint p95 was 16.4 / 44.5 / 33.1 ms for Chromium / Firefox /
+WebKit; the synthetic large-project results were 17.6 / 52.9 / 33.6 ms. The
+optimized HTML-capable module measured 36,857,336 raw bytes and 16,589,150 gzip
+bytes. Browser initialization fetches the compressed module; Node can use raw
+bytes. The packed consumer checks both assets and the HTML adapter declarations.
+
+A commercial host still needs its own representative document/package corpus,
+resource-constrained-device qualification and operating budgets. The engine
+provides no hard process memory cap, and Typst's upstream HTML target remains
+in development. CorTeX integration is reviewed separately in its own repository.
+
+The final source-cache regression also verifies references and rename across an
+imported `.txt` source, including after atomic replacement. On-demand source
+cells retain those syntax trees once used, while untouched UTF-8 assets remain
+unparsed. The native suite now contains sixteen integration cases.

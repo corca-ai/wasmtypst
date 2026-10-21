@@ -37,3 +37,5 @@ export async function createCompiler(
   await compiler.initialize(options);
   return compiler;
 }
+
+export { CompilerSession } from "./session.js";

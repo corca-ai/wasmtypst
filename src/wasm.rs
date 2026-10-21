@@ -20,6 +20,13 @@ impl TypstEngine {
             .put(path, bytes)
             .map_err(|e| JsValue::from_str(&e))
     }
+    pub fn snapshot(&mut self, files: JsValue, entry: &str) -> Result<u32, JsValue> {
+        let files =
+            serde_wasm_bindgen::from_value(files).map_err(|e| JsValue::from_str(&e.to_string()))?;
+        self.inner
+            .snapshot(files, entry)
+            .map_err(|e| JsValue::from_str(&e))
+    }
     pub fn add_font(&mut self, bytes: Vec<u8>) -> Result<u32, JsValue> {
         self.inner
             .add_font(bytes)

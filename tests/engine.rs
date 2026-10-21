@@ -310,3 +310,104 @@ fn custom_font_changes_identity_and_duplicate_font_is_a_noop() {
     assert_eq!(revision, e.add_font(font).unwrap());
     assert!(e.export_pdf(revision).unwrap().len() > 1000);
 }
+
+#[test]
+fn semantic_html_and_atomic_snapshot() {
+    let mut engine = Engine::new();
+    let rev = engine
+        .snapshot(
+            vec![(
+                "main.typ".into(),
+                b"= Research\nA *semantic* document with $x^2$.".to_vec(),
+            )],
+            "main.typ",
+        )
+        .unwrap();
+    let html = engine.compile_html();
+    assert_eq!(html["success"], true, "{html}");
+    assert_eq!(html["revision"], rev);
+    let output = html["html"].as_str().unwrap();
+    assert!(output.contains("<h2"));
+    assert!(output.contains("<strong"));
+    assert!(output.contains("<math"));
+    let failed = engine.snapshot(vec![("../escape".into(), b"bad".to_vec())], "main.typ");
+    assert!(failed.is_err());
+    assert_eq!(engine.compile_html(), html);
+    assert_eq!(engine.compile().revision, rev);
+    assert!(engine.compile().success);
+    engine
+        .snapshot(vec![("main.typ".into(), b"Updated".to_vec())], "main.typ")
+        .unwrap();
+    assert!(engine.export_pdf(rev).is_err());
+    assert!(
+        !engine.compile_html()["html"]
+            .as_str()
+            .unwrap()
+            .contains("Research")
+    );
+}
+
+#[test]
+fn utf8_assets_are_not_eagerly_parsed_and_arbitrary_sources_still_work() {
+    let mut world = wasmtypst::world::MemoryWorld::new();
+    world.put("asset.txt", vec![b'*'; 1024 * 1024]).unwrap();
+    assert!(world.sources.is_empty());
+    let mut engine = Engine::new();
+    engine
+        .put("part.txt", b"From another extension".to_vec())
+        .unwrap();
+    engine
+        .put("main.typ", b"#include \"part.txt\"".to_vec())
+        .unwrap();
+    assert!(engine.compile().success);
+}
+
+#[test]
+fn imported_non_typ_sources_participate_in_reference_and_rename_plans() {
+    let mut engine = Engine::new();
+    engine
+        .put("part.txt", b"#let answer = 42\n#answer".to_vec())
+        .unwrap();
+    engine
+        .put(
+            "main.typ",
+            b"#import \"part.txt\": answer\n#answer".to_vec(),
+        )
+        .unwrap();
+    assert!(engine.compile().success);
+    let refs = engine
+        .request(serde_json::json!({"op":"references","path":"part.txt","offset":6}))
+        .unwrap();
+    assert!(
+        refs.as_array()
+            .unwrap()
+            .iter()
+            .any(|r| r["path"] == "part.txt" && r["from"] == 5)
+    );
+    let plan = engine
+        .request(serde_json::json!({"op":"rename","path":"part.txt","offset":6,"newName":"result"}))
+        .unwrap();
+    assert!(plan["edits"].as_array().unwrap().len() >= 3);
+    engine
+        .snapshot(
+            vec![
+                (
+                    "main.typ".into(),
+                    b"#import \"part.txt\": answer\n#answer".to_vec(),
+                ),
+                ("part.txt".into(), b"#let answer = 43\n#answer".to_vec()),
+            ],
+            "main.typ",
+        )
+        .unwrap();
+    assert!(engine.compile().success);
+    assert_eq!(
+        engine
+            .request(serde_json::json!({"op":"references","path":"part.txt","offset":6}))
+            .unwrap()
+            .as_array()
+            .unwrap()
+            .len(),
+        refs.as_array().unwrap().len()
+    );
+}

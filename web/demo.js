@@ -1,9 +1,11 @@
 import { createCompiler } from "/dist/index.js";
+import { HtmlPreview } from "/dist/html-preview.js";
 import { Preview } from "/dist/preview.js";
 const source = document.querySelector("#source");
 const status = document.querySelector("#status");
 const button = document.querySelector("#compile");
 const download = document.querySelector("#download");
+const mode = document.querySelector("#mode");
 let compiler;
 let preview;
 let accepted;
@@ -23,8 +25,11 @@ async function compile() {
       status.textContent = "Compiling…";
       const started = performance.now();
       await compiler.putFile("main.typ", text);
-      const result = await compiler.compile();
-      if (pending || source.value !== text) {
+      const target = mode.value;
+      const result = await (target === "html"
+        ? compiler.compileHtml()
+        : compiler.compile());
+      if (pending || source.value !== text || target !== mode.value) {
         pending = true;
         continue;
       }
@@ -38,8 +43,8 @@ async function compile() {
           continue;
         }
         accepted = result;
-        download.disabled = false;
-        status.textContent = `${result.pages.length} page · ${Math.round(performance.now() - started)} ms`;
+        download.disabled = target === "html";
+        status.textContent = `${target === "html" ? "HTML" : `${result.pages.length} page`} · ${Math.round(performance.now() - started)} ms`;
       } else {
         accepted = undefined;
         status.textContent = "Check the source diagnostics";
@@ -51,17 +56,32 @@ async function compile() {
     running = false;
   }
 }
-try {
-  compiler = await createCompiler();
-  preview = new Preview(document.querySelector("#preview"), compiler);
-  preview.addEventListener("navigate", ({ detail }) => {
+function bindPreview(view) {
+  if (!(view instanceof Preview)) return;
+  view.addEventListener("navigate", ({ detail }) => {
     if (accepted && detail?.path === "main.typ") {
       source.focus();
       source.setSelectionRange(detail.from, detail.to);
     }
   });
-  preview.addEventListener("error", ({ detail }) => {
+  view.addEventListener("error", ({ detail }) => {
     status.textContent = String(detail);
+  });
+}
+try {
+  compiler = await createCompiler();
+  preview = new Preview(document.querySelector("#preview"), compiler);
+  bindPreview(preview);
+  mode.addEventListener("change", () => {
+    preview.dispose();
+    preview =
+      mode.value === "html"
+        ? new HtmlPreview(document.querySelector("#preview"), {
+            title: "HTML document preview",
+          })
+        : new Preview(document.querySelector("#preview"), compiler);
+    bindPreview(preview);
+    void compile();
   });
   button.disabled = false;
   button.addEventListener("click", compile);
@@ -69,9 +89,6 @@ try {
   source.addEventListener("input", () => {
     accepted = undefined;
     download.disabled = true;
-    void compiler.putFile("main.typ", source.value).catch((error) => {
-      status.textContent = String(error);
-    });
     clearTimeout(timer);
     timer = setTimeout(compile, 200);
   });

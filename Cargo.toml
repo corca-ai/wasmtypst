@@ -1,6 +1,6 @@
 [package]
 name = "wasmtypst"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 rust-version = "1.96"
 license = "MIT"
@@ -15,6 +15,7 @@ typst-ide = "=0.15.1"
 typst-pdf = "=0.15.1"
 typst-svg = "=0.15.1"
 typst-layout = "=0.15.1"
+typst-html = "=0.15.1"
 typst-assets = { version = "=0.15.1", features = ["fonts"] }
 typstyle-core = "=0.15.2"
 comemo = "0.5"

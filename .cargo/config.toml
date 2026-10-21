@@ -1,0 +1,4 @@
+[target.wasm32-unknown-unknown]
+# Bound linear-memory growth before a pathological document can exhaust the tab.
+# This is not a cap on JS, compiled code, or the browser process.
+rustflags = ["-C", "link-arg=--max-memory=268435456"]

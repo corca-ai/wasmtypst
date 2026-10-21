@@ -8,7 +8,7 @@ on CorTeX or its application model.
 ## Engine
 
 Rust owns project files, incremental Source objects, fonts, inputs, compilation,
-diagnostics, PDF/SVG export, formatting and source semantics. Typst, typst-ide,
+diagnostics, PDF/SVG and HTML export, formatting and source semantics. Typst, typst-ide,
 typst-layout, typst-pdf and typst-svg are pinned together in Cargo.toml and
 Cargo.lock. Typstyle uses that same typst-syntax version. No Tinymist compiler,
 native filesystem, package downloader, native preview server or system fonts
@@ -23,8 +23,8 @@ document; a host may keep displaying its previous image, but cannot query it
 against newer source.
 
 The SHA-256 fingerprint covers the runtime profile and Cargo.lock, main path,
-all project/package file bytes, bundled and added fonts, and configuration.
-File insertion order does not change identity. Source remains solely in memory.
+all project/package file content digests, bundled and added fonts, and configuration.
+File insertion order does not change identity. File SHA-256 digests are updated only on mutation; each compile hashes the sorted inventory of paths and digests, rather than rereading large unchanged binaries. UTF-8 assets are not eagerly parsed as Typst; source lookup still supports arbitrary file extensions. Source remains solely in memory.
 Dependencies and missing files are conservative session inventories: memoized
 Typst queries can reuse earlier reads, so these sets can include previous
 dependencies. A successful compile does not need to resolve remaining entries.
@@ -106,3 +106,46 @@ discard setup and record 20 samples. Cold startup is a single observation per
 browser, not a p95 claim. Linear-memory size is supplementary and excludes host
 allocations. These tests do not establish compatibility with every package,
 font, PDF viewer, document or resource-constrained device.
+
+## Atomic inventory and interactive scheduling
+
+`snapshot({files, entry})` validates a replacement inventory in a copy-on-write
+World before publication. Deletions and entry selection commit in one revision.
+Invalid or duplicate paths and admission failures leave the current world and
+outputs intact. Incremental Source objects survive changed text. Revision
+fingerprints identify content independently of file insertion order.
+
+`compileHtml()` uses the same World and official HTML target, retaining only its
+serialized result. It does not require or retain a second paginated document.
+Its diagnostics are independent of paginated compilation. The optional HtmlPreview
+uses an opaque-origin sandbox and first-document CSP; scripts, same-origin
+access, forms, popups and automatic navigation are disabled. It never injects
+source HTML into the host DOM. Raw exported HTML is not sanitized for trusted
+DOM insertion. HTML source navigation is not exposed by this adapter yet.
+
+`CompilerSession` holds one running job and one latest pending snapshot. New
+requests reject superseded callers; the worker finishes its current operation
+before the newest snapshot is admitted. AbortSignal cancellation terminates an
+active worker. The next request recreates a failed/cancelled worker from its
+explicit snapshot. Disposal also terminates it. The factory owns any project
+fonts/configuration and is called again on recovery. Use immutable captured
+authorization context in a host resolver.
+
+The lower-level Compiler bounds its queue to 128 requests and 64 MiB of input
+bytes. Concurrent source mutations supersede compilation and dependency
+resolution. Resolver calls receive an AbortSignal combining worker lifetime and
+request deadline, so disposal and timeout stop waiting for a resolver. Hosts
+must honor that signal to cancel their own downloads. The engine itself never
+performs network access.
+
+Browser workers fetch a gzip-compressed module and decompress it inside the
+worker before initialization. The generated binding has no unused raw-WASM URL
+that would make a bundler emit the oversized raw asset. The raw module remains
+available for explicit hosts and Node. Build locking prevents concurrent
+builders from interleaving release files.
+
+The release module sets a 256 MiB maximum for WASM linear memory. Allocation
+exhaustion becomes a fatal worker error; CompilerSession recreates the worker
+for the next supplied snapshot. This bounds the engine's linear heap, not JS
+buffers, compiled code or process RSS. Tests exercise actual memory growth
+refusal and recovery after an excessive syntax-tree allocation.

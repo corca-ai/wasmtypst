@@ -3022,7 +3022,7 @@ dependencies = [
 
 [[package]]
 name = "wasmtypst"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "comemo",
  "console_error_panic_hook",
@@ -3032,6 +3032,7 @@ dependencies = [
  "sha2",
  "typst",
  "typst-assets",
+ "typst-html",
  "typst-ide",
  "typst-layout",
  "typst-pdf",

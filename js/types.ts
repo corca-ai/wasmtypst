@@ -34,6 +34,13 @@ export interface CompileResult {
   missingFiles: string[];
   fingerprint: string;
 }
+export interface HtmlResult extends Omit<CompileResult, "pages"> {
+  html: string | null;
+}
+export interface ProjectSnapshot {
+  files: Record<string, string | Uint8Array<ArrayBuffer>>;
+  entry: string;
+}
 export interface CompletionItem {
   kind: string;
   label: string;
@@ -88,11 +95,12 @@ export interface CompilerOptions {
   timeoutMs?: number;
   resolveFile?: (
     path: string,
+    signal: AbortSignal,
   ) => Promise<string | Uint8Array<ArrayBuffer> | null>;
 }
 export type Query =
   | { op: "entry" | "remove"; path: string }
-  | { op: "compile" }
+  | { op: "compile" | "compileHtml" }
   | ({ op: "configure" } & Configuration)
   | {
       op: "completion" | "hover" | "definition" | "references";
@@ -106,6 +114,11 @@ export type Query =
 export type Command =
   | { kind: "init"; wasm?: Exclude<WasmSource, URL> }
   | { kind: "put"; path: string; bytes: Uint8Array<ArrayBuffer> }
+  | {
+      kind: "snapshot";
+      files: [string, Uint8Array<ArrayBuffer>][];
+      entry: string;
+    }
   | { kind: "font"; bytes: Uint8Array<ArrayBuffer> }
   | { kind: "query"; request: Query }
   | { kind: "pdf"; revision: number }

@@ -1,6 +1,6 @@
 {
   "name": "wasmtypst",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Single-world Typst compiler, language services and source navigation for browsers and Node",
   "type": "module",
   "license": "MIT",
@@ -46,17 +46,22 @@
       "import": "./dist/monaco.js"
     },
     "./wasm": "./dist/wasm/wasmtypst_bg.wasm",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./html-preview": {
+      "types": "./dist/html-preview.d.ts",
+      "import": "./dist/html-preview.js"
+    }
   },
   "scripts": {
     "build": "bun run scripts/build.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "cargo test --locked && bun run node tests/sdk.mjs",
+    "test": "cargo test --locked && bun run node tests/sdk.mjs && bun run node tests/production.mjs",
     "test:browser": "bun run node tests/browser.mjs",
     "test:package": "bun run node tests/package.mjs",
     "check": "bun run format:check && cargo fmt --check && cargo clippy --locked --all-targets -- -D warnings && bun run typecheck && bun run test && bun run test:browser && bun run test:package",
     "serve": "bun run node scripts/serve.mjs",
-    "format:check": "biome format ."
+    "format:check": "biome format .",
+    "benchmark": "bun run node scripts/benchmark.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.3",
@@ -65,5 +70,13 @@
     "monaco-editor": "0.55.1",
     "playwright": "1.59.1",
     "typescript": "5.9.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corca-ai/wasmtypst.git"
+  },
+  "homepage": "https://github.com/corca-ai/wasmtypst#readme",
+  "bugs": {
+    "url": "https://github.com/corca-ai/wasmtypst/issues"
   }
 }

@@ -66,9 +66,21 @@ try {
       assert.equal(proof.result.languageCapabilities, 8);
       assert.equal(proof.result.plugin, true);
       assert.equal(proof.result.customFont, true);
+      assert.equal(proof.result.html, true);
+      const htmlFrame = page.frameLocator(
+        'iframe[title="Semantic HTML preview"]',
+      );
+      assert.equal(await htmlFrame.locator("h2").textContent(), "SemanticHTML");
+      assert.equal(await htmlFrame.locator("math").count(), 1);
+      assert.equal(
+        await htmlFrame
+          .locator("body")
+          .evaluate(() => window.untrustedExecuted),
+        undefined,
+      );
       assert.ok(proof.result.large.sourceBytes >= 1048576);
       assert.equal(
-        requests.filter((r) => r.url.endsWith("wasmtypst_bg.wasm")).length,
+        requests.filter((r) => r.url.endsWith("wasmtypst_bg.wasm.gz")).length,
         1,
         "Exactly one compiler module must load",
       );

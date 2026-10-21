@@ -7,6 +7,8 @@ import type {
   EditPlan,
   FormatEdit,
   Hover,
+  HtmlResult,
+  ProjectSnapshot,
   Jump,
   PagePoint,
   Query,
@@ -25,9 +27,13 @@ export class Compiler {
       resolve: (value: unknown) => void;
       reject: (error: Error) => void;
       timer: ReturnType<typeof setTimeout>;
+      bytes: number;
     }
   >();
+  #queuedBytes = 0;
   #nextId = 1;
+  #epoch = 0;
+  #lifetime = new AbortController();
   #disposed = false;
   #timeout: number;
   #resolver: CompilerOptions["resolveFile"];
@@ -51,6 +57,7 @@ export class Compiler {
         const pending = this.#pending.get(data.id);
         if (!pending) return;
         this.#pending.delete(data.id);
+        this.#queuedBytes -= pending.bytes;
         clearTimeout(pending.timer);
         if ("ok" in data && data.ok === true && "result" in data)
           pending.resolve(data.result);
@@ -68,6 +75,7 @@ export class Compiler {
   #fail(error: Error): void {
     if (this.#disposed) return;
     this.#disposed = true;
+    this.#lifetime.abort(error);
     this.#release();
     this.#transport.terminate();
     for (const pending of this.#pending.values()) {
@@ -75,10 +83,24 @@ export class Compiler {
       pending.reject(error);
     }
     this.#pending.clear();
+    this.#queuedBytes = 0;
   }
   #invoke<T>(command: Command): Promise<T> {
     if (this.#disposed)
       return Promise.reject(new Error("Compiler is disposed"));
+    if (this.#pending.size >= 128)
+      return Promise.reject(new Error("Worker queue exceeds 128 requests"));
+    const bytes =
+      command.kind === "put" || command.kind === "font"
+        ? command.bytes.byteLength
+        : command.kind === "snapshot"
+          ? command.files.reduce(
+              (size, [, value]) => size + value.byteLength,
+              0,
+            )
+          : 0;
+    if (this.#queuedBytes + bytes > 64 * 1024 * 1024)
+      return Promise.reject(new Error("Worker queued input exceeds 64 MiB"));
     const id = this.#nextId++;
     // The only cast is the typed engine/worker protocol boundary. All public
     // methods below specify the Rust operation's exact result contract.
@@ -87,7 +109,8 @@ export class Compiler {
         () => this.#fail(new Error("Worker timed out; compiler terminated")),
         this.#timeout,
       );
-      this.#pending.set(id, { resolve, reject, timer });
+      this.#queuedBytes += bytes;
+      this.#pending.set(id, { resolve, reject, timer, bytes });
       try {
         this.#transport.post({ id, command });
       } catch (error) {
@@ -103,9 +126,10 @@ export class Compiler {
         kind: "init",
         ...(wasm === undefined ? {} : { wasm }),
       });
-      for (const [path, bytes] of Object.entries(options.files ?? {}))
-        await this.putFile(path, bytes);
-      if (options.entry) await this.setEntry(options.entry);
+      await this.snapshot({
+        files: options.files ?? {},
+        entry: options.entry ?? "main.typ",
+      });
       if (options.configuration) await this.configure(options.configuration);
     } catch (error) {
       this.dispose();
@@ -123,35 +147,85 @@ export class Compiler {
       typeof content === "string" ? new TextEncoder().encode(content) : content;
     if (bytes.byteLength > 16 * 1024 * 1024)
       return Promise.reject(new Error("File exceeds 16 MiB"));
+    this.#epoch++;
     return this.#invoke({ kind: "put", path, bytes });
   }
+  snapshot(snapshot: ProjectSnapshot): Promise<number> {
+    const files: [string, Uint8Array<ArrayBuffer>][] = Object.entries(
+      snapshot.files,
+    ).map(([path, value]) => [
+      path,
+      typeof value === "string" ? new TextEncoder().encode(value) : value,
+    ]);
+    this.#epoch++;
+    return this.#invoke({ kind: "snapshot", files, entry: snapshot.entry });
+  }
   removeFile(path: string): Promise<number> {
+    this.#epoch++;
     return this.#query({ op: "remove", path });
   }
   setEntry(path: string): Promise<number> {
+    this.#epoch++;
     return this.#query({ op: "entry", path });
   }
   configure(configuration: Configuration): Promise<number> {
+    this.#epoch++;
     return this.#query({ op: "configure", ...configuration });
   }
   addFont(bytes: Uint8Array<ArrayBuffer>): Promise<number> {
     if (bytes.byteLength > 16 * 1024 * 1024)
       return Promise.reject(new Error("Font exceeds 16 MiB"));
+    this.#epoch++;
     return this.#invoke({ kind: "font", bytes });
   }
-  async compile(): Promise<CompileResult> {
+  compile(): Promise<CompileResult> {
+    return this.#compile("compile");
+  }
+  compileHtml(): Promise<HtmlResult> {
+    return this.#compile("compileHtml");
+  }
+  async #compile<T extends CompileResult | HtmlResult>(
+    op: "compile" | "compileHtml",
+  ): Promise<T> {
+    const epoch = this.#epoch;
     const attempted = new Set<string>();
     for (let round = 0; round < 64; round++) {
-      const result = await this.#query<CompileResult>({ op: "compile" });
+      const result = await this.#query<T>({ op });
+      if (epoch !== this.#epoch)
+        throw new Error("Compilation superseded by a source mutation");
       if (result.success || !this.#resolver) return result;
       let added = false;
       for (const path of result.missingFiles) {
         if (attempted.has(path)) continue;
         attempted.add(path);
-        const bytes = await this.#resolver(path);
+        const signal = AbortSignal.any([
+          this.#lifetime.signal,
+          AbortSignal.timeout(this.#timeout),
+        ]);
+        let release = () => {};
+        const stopped = new Promise<never>((_, reject) => {
+          const abort = () => reject(signal.reason);
+          signal.addEventListener("abort", abort, { once: true });
+          release = () => signal.removeEventListener("abort", abort);
+          if (signal.aborted) abort();
+        });
+        const bytes = await Promise.race([
+          this.#resolver(path, signal),
+          stopped,
+        ]).finally(() => release());
         if (this.#disposed) throw new Error("Compiler is disposed");
+        if (epoch !== this.#epoch)
+          throw new Error(
+            "Dependency resolution superseded by a source mutation",
+          );
         if (bytes !== null) {
-          await this.putFile(path, bytes);
+          const content =
+            typeof bytes === "string" ? new TextEncoder().encode(bytes) : bytes;
+          await this.#invoke({ kind: "put", path, bytes: content });
+          if (epoch !== this.#epoch)
+            throw new Error(
+              "Dependency resolution superseded by a source mutation",
+            );
           added = true;
         }
       }
@@ -205,9 +279,13 @@ export class Compiler {
   stats(): Promise<{
     revision: number;
     wasmLinearMemoryBytes: number;
+    wasmLinearMemoryLimitBytes: number;
     typstVersion: string;
   }> {
     return this.#invoke({ kind: "stats" });
+  }
+  get isDisposed(): boolean {
+    return this.#disposed;
   }
   dispose(): void {
     this.#fail(new Error("Compiler is disposed"));

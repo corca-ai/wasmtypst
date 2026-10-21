@@ -49,7 +49,7 @@ impl Engine {
 
     fn references_to(&self, target: Span) -> Vec<Value> {
         let mut result = Vec::new();
-        for source in self.world.sources.values() {
+        for source in self.world.parsed_sources() {
             let mut nodes = Vec::new();
             leaves(LinkedNode::new(source.root()), &mut nodes);
             for node in nodes {
@@ -162,7 +162,7 @@ impl Engine {
                 }
                 // Conservatively refuse collisions rather than silently capture
                 // another binding. All edits are plans; the host applies them.
-                for src in self.world.sources.values() {
+                for src in self.world.parsed_sources() {
                     let mut nodes = Vec::new();
                     leaves(LinkedNode::new(src.root()), &mut nodes);
                     if nodes.iter().any(|n| {

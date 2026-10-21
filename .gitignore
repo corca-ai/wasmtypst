@@ -3,3 +3,5 @@
 /dist/
 /report/
 /*.tgz
+
+.build.lock
