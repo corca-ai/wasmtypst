@@ -143,3 +143,9 @@ worker before initialization. The generated binding has no unused raw-WASM URL
 that would make a bundler emit the oversized raw asset. The raw module remains
 available for explicit hosts and Node. Build locking prevents concurrent
 builders from interleaving release files.
+
+The release module sets a 256 MiB maximum for WASM linear memory. Allocation
+exhaustion becomes a fatal worker error; CompilerSession recreates the worker
+for the next supplied snapshot. This bounds the engine's linear heap, not JS
+buffers, compiled code or process RSS. Tests exercise actual memory growth
+refusal and recovery after an excessive syntax-tree allocation.

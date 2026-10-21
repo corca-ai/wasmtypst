@@ -108,3 +108,38 @@ try {
   session.dispose();
 }
 console.log("Latest-only scheduling, cancellation and worker recovery passed");
+
+// The actual module refuses growth beyond its 256 MiB linear-memory ceiling.
+const bindings = await import("../dist/wasm/wasmtypst.js");
+const { readFile } = await import("node:fs/promises");
+const output = await bindings.default({
+  module_or_path: new Uint8Array(
+    await readFile(new URL("../dist/wasm/wasmtypst_bg.wasm", import.meta.url)),
+  ),
+});
+assert.throws(() => output.memory.grow(4096), RangeError);
+const bounded = new CompilerSession(() => createCompiler({ timeoutMs: 5000 }));
+try {
+  await assert.rejects(
+    bounded.compile({
+      entry: "main.typ",
+      files: {
+        "main.typ": "#let values = (" + "0,".repeat(4 * 1024 * 1024) + ")",
+      },
+    }),
+  );
+  assert.equal(
+    (
+      await bounded.compile({
+        entry: "main.typ",
+        files: { "main.typ": "Recovered after resource refusal" },
+      })
+    ).success,
+    true,
+  );
+} finally {
+  bounded.dispose();
+}
+console.log(
+  "Real WASM memory ceiling and recovery after resource exhaustion passed",
+);

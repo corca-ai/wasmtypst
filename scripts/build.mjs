@@ -75,6 +75,7 @@ try {
   const receipt = {
     optimized,
     typstVersion: "0.15.1",
+    wasmLinearMemoryLimitBytes: 256 * 1024 * 1024,
     wasmBindgenVersion: version,
     rustc: execFileSync("rustc", ["--version"], { encoding: "utf8" }).trim(),
     cargoLockSha256: sha256(await readFile("Cargo.lock")),

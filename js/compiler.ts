@@ -279,6 +279,7 @@ export class Compiler {
   stats(): Promise<{
     revision: number;
     wasmLinearMemoryBytes: number;
+    wasmLinearMemoryLimitBytes: number;
     typstVersion: string;
   }> {
     return this.#invoke({ kind: "stats" });
