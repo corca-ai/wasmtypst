@@ -1,7 +1,9 @@
 # WasmTypst
 
+[![Check](https://github.com/corca-ai/wasmtypst/actions/workflows/ci.yml/badge.svg)](https://github.com/corca-ai/wasmtypst/actions/workflows/ci.yml)
+
 A Typst compiler and language SDK for browsers and Node. One Rust/WASM runtime
-owns compilation, PDF/SVG output, diagnostics, editor queries and bidirectional
+owns compilation, PDF/SVG and semantic HTML output, diagnostics, editor queries and bidirectional
 source navigation against the same document revision.
 
 ## Package entries
@@ -15,6 +17,7 @@ optional; the integrating application owns source, collaboration and history.
 | `wasmtypst/node` | Node Worker compiler, same WASM engine |
 | `wasmtypst/core` | Direct headless engine, browser or Node |
 | `wasmtypst/preview` | Optional SVG image preview with click navigation |
+| `wasmtypst/html-preview` | Scriptless sandboxed semantic HTML view |
 | `wasmtypst/monaco` | Optional Monaco language providers and diagnostics adapter |
 | `wasmtypst/wasm` | Released WASM asset |
 
@@ -40,8 +43,9 @@ try {
 }
 ```
 
-The Worker and WASM assets resolve relative to the installed package. Serve
-them with JavaScript/WASM MIME types. Bundlers must preserve the module Worker
+The Worker and compressed WASM assets resolve relative to the installed package.
+Serve JavaScript with its JavaScript MIME type and `.wasm.gz` as opaque gzip bytes
+(without an additional Content-Encoding claiming those bytes are already decoded). Bundlers must preserve the module Worker
 and generated wasm-bindgen module/assets. A host may set `wasm` to an immutable
 URL, byte buffer or compiled WebAssembly.Module. Cross-origin isolation and
 SharedArrayBuffer are not required.
@@ -141,3 +145,49 @@ See [architecture and limits](docs/architecture.md) for revision ownership,
 language coverage, host resolution, disposal and qualification boundaries.
 Original code is MIT licensed. Typst, fonts and other dependencies retain their
 licenses; see THIRD_PARTY_NOTICES.md and LICENSES included with the build.
+
+## HTML and consistent project replacement
+
+```ts
+await compiler.snapshot({
+  entry: 'main.typ',
+  files: { 'main.typ': '= Article\nA *semantic* document with $x^2$.' },
+});
+const html = await compiler.compileHtml();
+if (html.success) console.log(html.html);
+```
+
+Snapshots atomically replace the inventory, including deletions, in one revision.
+Invalid snapshots leave the current world and output intact. The caller owns the
+source snapshot; concurrent host mutations supersede a compile or dependency
+resolution rather than admitting mixed results. HTML has its own target
+diagnostics and does not require paginated layout. Typst 0.15.1 still marks its
+HTML target as an in-development feature; PDF-only packages may refuse it.
+
+```ts
+import { HtmlPreview } from 'wasmtypst/html-preview';
+const view = new HtmlPreview(element, { title: 'Document preview' });
+view.render(await compiler.compileHtml());
+// On unmount: view.dispose();
+```
+
+HTML retains headings, selectable text, tables and MathML. The optional view
+does not grant source-generated HTML scripts, origin access, forms or network
+resources. Raw HTML export is not sanitized for insertion in a trusted host DOM.
+
+Repository: [corca-ai/wasmtypst](https://github.com/corca-ai/wasmtypst).
+See [contributing](CONTRIBUTING.md) for qualification and release artifacts.
+
+For interactive hosts, `CompilerSession` coalesces work and supports cancellation:
+
+```ts
+import { CompilerSession, createCompiler } from 'wasmtypst';
+const session = new CompilerSession(() => createCompiler());
+const result = await session.compile(snapshot, { target: 'html', signal });
+// Superseded requests reject with AbortError. Dispose on project close.
+session.dispose();
+```
+
+`bun run benchmark` measures a multi-section article with paragraphs, equations
+and tables, with and without a 16 MiB binary. It reports warm percentiles, cold
+initialization, linear memory and process peak RSS separately.

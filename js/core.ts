@@ -14,9 +14,19 @@ export async function instantiate(wasm?: WasmSource): Promise<Core> {
   if (!initialization) {
     initializedSource = wasm;
     initialization = (async () => {
-      const output = await init(
-        wasm === undefined ? undefined : { module_or_path: wasm },
-      );
+      let source = wasm;
+      if (source === undefined) {
+        const response = await fetch(
+          new URL("./wasm/wasmtypst_bg.wasm.gz", import.meta.url),
+        );
+        if (!response.ok || !response.body)
+          throw new Error(`WASM fetch failed (${response.status})`);
+        const stream = response.body.pipeThrough(
+          new DecompressionStream("gzip"),
+        );
+        source = new Uint8Array(await new Response(stream).arrayBuffer());
+      }
+      const output = await init({ module_or_path: source });
       memory = output.memory;
     })();
     initialization.catch(() => {
@@ -43,6 +53,8 @@ class EngineCore implements Core {
     switch (command.kind) {
       case "put":
         return engine.put(command.path, command.bytes);
+      case "snapshot":
+        return engine.snapshot(command.files, command.entry);
       case "font":
         return engine.add_font(command.bytes);
       case "query":

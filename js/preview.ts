@@ -32,12 +32,15 @@ export class Preview extends EventTarget {
     );
   }
   #host: HTMLElement;
-  #compiler: Compiler;
+  #compiler: Pick<Compiler, "svg" | "outputToSource">;
   #epoch = 0;
   #urls: string[] = [];
   #disposed = false;
   #click: (event: MouseEvent) => void;
-  constructor(host: HTMLElement, compiler: Compiler) {
+  constructor(
+    host: HTMLElement,
+    compiler: Pick<Compiler, "svg" | "outputToSource">,
+  ) {
     super();
     this.#host = host;
     this.#compiler = compiler;

@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>WasmTypst</title>
 <link rel="stylesheet" href="/web/style.css">
-<header><h1>WasmTypst</h1><span>Typst in your browser</span><button id="compile" disabled>Compile</button><button id="download" disabled>Download PDF</button><output id="status" role="status">Preparing compiler…</output></header>
+<header><h1>WasmTypst</h1><span>Typst in your browser</span><button id="compile" disabled>Compile</button><label for="mode">Preview</label><select id="mode"><option value="svg">Pages</option><option value="html">HTML</option></select><button id="download" disabled>Download PDF</button><output id="status" role="status">Preparing compiler…</output></header>
 <main><section><label for="source">Typst source</label><textarea id="source" spellcheck="false" aria-label="Typst source">#set page(paper: "a4", margin: 24mm)
 #set text(size: 11pt)
 = A single world

@@ -1,9 +1,11 @@
 import { createCompiler } from "/dist/index.js";
+import { HtmlPreview } from "/dist/html-preview.js";
 import { Preview } from "/dist/preview.js";
 const source = document.querySelector("#source");
 const status = document.querySelector("#status");
 const button = document.querySelector("#compile");
 const download = document.querySelector("#download");
+const mode = document.querySelector("#mode");
 let compiler;
 let preview;
 let accepted;
@@ -23,8 +25,11 @@ async function compile() {
       status.textContent = "Compiling…";
       const started = performance.now();
       await compiler.putFile("main.typ", text);
-      const result = await compiler.compile();
-      if (pending || source.value !== text) {
+      const target = mode.value;
+      const result = await (target === "html"
+        ? compiler.compileHtml()
+        : compiler.compile());
+      if (pending || source.value !== text || target !== mode.value) {
         pending = true;
         continue;
       }
@@ -38,8 +43,8 @@ async function compile() {
           continue;
         }
         accepted = result;
-        download.disabled = false;
-        status.textContent = `${result.pages.length} page · ${Math.round(performance.now() - started)} ms`;
+        download.disabled = target === "html";
+        status.textContent = `${target === "html" ? "HTML" : `${result.pages.length} page`} · ${Math.round(performance.now() - started)} ms`;
       } else {
         accepted = undefined;
         status.textContent = "Check the source diagnostics";
@@ -62,6 +67,16 @@ try {
   });
   preview.addEventListener("error", ({ detail }) => {
     status.textContent = String(detail);
+  });
+  mode.addEventListener("change", () => {
+    preview.dispose();
+    preview =
+      mode.value === "html"
+        ? new HtmlPreview(document.querySelector("#preview"), {
+            title: "HTML document preview",
+          })
+        : new Preview(document.querySelector("#preview"), compiler);
+    void compile();
   });
   button.disabled = false;
   button.addEventListener("click", compile);

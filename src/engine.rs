@@ -35,6 +35,7 @@ pub struct Engine {
     compiled_revision: Option<u32>,
     report: Option<CompileReport>,
     pdf: Option<Vec<u8>>,
+    html: Option<Value>,
 }
 
 impl Default for Engine {
@@ -52,6 +53,7 @@ impl Engine {
             compiled_revision: None,
             report: None,
             pdf: None,
+            html: None,
         }
     }
 
@@ -61,6 +63,10 @@ impl Engine {
             .checked_add(1)
             .expect("Revision exhausted; create a new engine");
         self.pdf = None;
+        self.html = None;
+        self.document = None;
+        self.report = None;
+        self.compiled_revision = None;
     }
 
     pub fn put(&mut self, path: &str, bytes: Vec<u8>) -> Result<u32, String> {
@@ -68,6 +74,89 @@ impl Engine {
             self.changed();
         }
         Ok(self.revision)
+    }
+
+    /// Validate a replacement inventory in isolation; publish exactly one revision.
+    pub fn snapshot(&mut self, files: Vec<(String, Vec<u8>)>, entry: &str) -> Result<u32, String> {
+        let mut next = self.world.clone();
+        let id = file_id(entry)?;
+        if matches!(id.root(), typst::syntax::VirtualRoot::Package(_)) {
+            return Err("Entry must be a project file".into());
+        }
+        let mut ids = std::collections::HashSet::new();
+        for (path, _) in &files {
+            if !ids.insert(file_id(path)?) {
+                return Err("Duplicate snapshot path".into());
+            }
+        }
+        let removed: Vec<_> = next
+            .files
+            .keys()
+            .filter(|id| !ids.contains(id))
+            .copied()
+            .collect();
+        for id in removed {
+            next.remove(&path_for(id))?;
+        }
+        // Remove replaced bytes before admission so replacement isn't limited by old assets.
+        for (path, bytes) in &files {
+            let id = file_id(path)?;
+            if next
+                .files
+                .get(&id)
+                .is_some_and(|old| old.as_slice() != bytes)
+            {
+                next.files.remove(&id);
+            }
+        }
+        for (path, bytes) in files {
+            next.put(&path, bytes)?;
+        }
+        next.main = id;
+        if self.world.fingerprint() != next.fingerprint() {
+            self.world = next;
+            self.changed();
+        }
+        Ok(self.revision)
+    }
+
+    /// Semantic HTML uses the same World but the HTML target has independent diagnostics.
+    pub fn compile_html(&mut self) -> Value {
+        if let Some(result) = &self.html {
+            return result.clone();
+        }
+        let result = typst::compile::<typst_html::HtmlDocument>(&self.world);
+        let mut diagnostics: Vec<_> = result.warnings.iter().map(|d| self.diagnostic(d)).collect();
+        let output = result
+            .output
+            .and_then(|doc| typst_html::html(&doc, &Default::default()));
+        let html = match output {
+            Ok(html) => Some(html),
+            Err(errors) => {
+                diagnostics.extend(errors.iter().map(|d| self.diagnostic(d)));
+                None
+            }
+        };
+        let mut dependencies: Vec<_> = self
+            .world
+            .accessed
+            .lock()
+            .unwrap()
+            .iter()
+            .map(|id| path_for(*id))
+            .collect();
+        dependencies.sort();
+        let missing: Vec<_> = dependencies
+            .iter()
+            .filter(|path| !self.world.files.contains_key(&file_id(path).unwrap()))
+            .cloned()
+            .collect();
+        let report = json!({"revision":self.revision, "success":html.is_some(), "html":html,
+            "diagnostics":diagnostics, "dependencies":dependencies, "missingFiles":missing,
+            "fingerprint": self.world.fingerprint()});
+        self.html = Some(report.clone());
+        comemo::evict(10);
+        report
     }
 
     pub fn remove(&mut self, path: &str) -> Result<u32, String> {
@@ -227,6 +316,7 @@ impl Engine {
         match op {
             "entry" => Ok(json!(self.entry(path)?)),
             "remove" => Ok(json!(self.remove(path)?)),
+            "compileHtml" => Ok(self.compile_html()),
             "compile" => Ok(serde_json::to_value(self.compile()).unwrap()),
             "configure" => {
                 let mut inputs = Dict::new();

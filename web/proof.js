@@ -195,6 +195,38 @@ try {
     await paint(result);
     if (i) largeTimes.push(performance.now() - start);
   }
+  const { HtmlPreview } = await import("/dist/html-preview.js");
+  await compiler.snapshot({
+    files: {
+      "main.typ": "= SemanticHTML\nA *selectable* document with $x^2$.",
+    },
+    entry: "main.typ",
+  });
+  const htmlResult = await compiler.compileHtml();
+  check(htmlResult.success, JSON.stringify(htmlResult.diagnostics));
+  check(
+    htmlResult.html.includes("<h2>") && htmlResult.html.includes("<math>"),
+    "Semantic HTML missing",
+  );
+  const htmlHost = document.createElement("section");
+  document.body.append(htmlHost);
+  const htmlView = new HtmlPreview(htmlHost, {
+    title: "Semantic HTML preview",
+  });
+  const frame = htmlHost.querySelector("iframe");
+  const loaded = new Promise((resolve, reject) => {
+    frame.addEventListener("load", resolve, { once: true });
+    setTimeout(() => reject(new Error("HTML frame did not load")), 10000);
+  });
+  htmlView.render({
+    ...htmlResult,
+    html:
+      htmlResult.html +
+      "<script>window.untrustedExecuted=true;parent.untrustedExecuted=true;</script>",
+  });
+  await loaded;
+  check(frame.contentDocument === null, "HTML preview must have opaque origin");
+  check(window.untrustedExecuted !== true, "HTML script escaped sandbox");
   window.proof = {
     done: true,
     result: {
@@ -204,6 +236,7 @@ try {
       languageCapabilities: 8,
       plugin: true,
       customFont: true,
+      html: true,
       compile: summary(compileTimes),
       editToPaint: summary(editTimes),
       pdfExport: summary(pdfTimes),

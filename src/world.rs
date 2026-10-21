@@ -13,6 +13,7 @@ pub const MAX_FILE_BYTES: usize = 16 * 1024 * 1024;
 pub const MAX_PROJECT_BYTES: usize = 64 * 1024 * 1024;
 pub const MAX_FILES: usize = 4096;
 
+#[derive(Clone)]
 pub struct MemoryWorld {
     library: LazyHash<Library>,
     book: LazyHash<FontBook>,
@@ -21,7 +22,8 @@ pub struct MemoryWorld {
     pub sources: HashMap<FileId, Source>,
     pub main: FileId,
     pub date: Option<Datetime>,
-    pub accessed: Mutex<HashSet<FileId>>,
+    pub accessed: std::sync::Arc<Mutex<HashSet<FileId>>>,
+    file_hashes: HashMap<FileId, [u8; 32]>,
     font_hashes: Vec<Vec<u8>>,
     font_bytes: usize,
     config_identity: Vec<u8>,
@@ -78,14 +80,19 @@ impl MemoryWorld {
             .map(|bytes| Sha256::digest(bytes).to_vec())
             .collect();
         Self {
-            library: LazyHash::new(Library::default()),
+            library: LazyHash::new(
+                Library::builder()
+                    .with_features([typst::Feature::Html].into_iter().collect())
+                    .build(),
+            ),
             book: LazyHash::new(FontBook::from_fonts(&fonts)),
             fonts,
             files: HashMap::new(),
             sources: HashMap::new(),
             main: file_id("main.typ").unwrap(),
             date: None,
-            accessed: Mutex::default(),
+            accessed: Default::default(),
+            file_hashes: HashMap::new(),
             font_hashes,
             font_bytes: typst_assets::fonts().map(|bytes| bytes.len()).sum(),
             config_identity: Vec::new(),
@@ -116,7 +123,10 @@ impl MemoryWorld {
         if !self.files.contains_key(&id) && self.files.len() >= MAX_FILES {
             return Err("Project exceeds 4096 files".into());
         }
-        if let Ok(text) = std::str::from_utf8(&bytes) {
+        if let Some(text) = std::str::from_utf8(&bytes)
+            .ok()
+            .filter(|_| path.ends_with(".typ") || self.sources.contains_key(&id))
+        {
             if let Some(source) = self.sources.get_mut(&id) {
                 source.replace(text);
             } else {
@@ -125,6 +135,7 @@ impl MemoryWorld {
         } else {
             self.sources.remove(&id);
         }
+        self.file_hashes.insert(id, Sha256::digest(&bytes).into());
         self.files.insert(id, Bytes::new(bytes));
         Ok(true)
     }
@@ -132,6 +143,7 @@ impl MemoryWorld {
     pub fn remove(&mut self, path: &str) -> Result<bool, String> {
         let id = file_id(path)?;
         self.sources.remove(&id);
+        self.file_hashes.remove(&id);
         Ok(self.files.remove(&id).is_some())
     }
 
@@ -162,7 +174,12 @@ impl MemoryWorld {
     }
 
     pub fn set_inputs(&mut self, inputs: Dict) {
-        self.library = LazyHash::new(Library::builder().with_inputs(inputs).build());
+        self.library = LazyHash::new(
+            Library::builder()
+                .with_inputs(inputs)
+                .with_features([typst::Feature::Html].into_iter().collect())
+                .build(),
+        );
     }
 
     pub fn set_config_identity(&mut self, bytes: Vec<u8>) {
@@ -175,19 +192,19 @@ impl MemoryWorld {
             hash.update((bytes.len() as u64).to_le_bytes());
             hash.update(bytes);
         };
-        add(b"wasmtypst/0.1.0;typst/0.15.1");
+        add(b"wasmtypst/0.2.0;typst/0.15.1;merkle-sha256-v1");
         add(include_bytes!("../Cargo.lock"));
         add(path_for(self.main).as_bytes());
         add(&self.config_identity);
         let mut files: Vec<_> = self
             .files
-            .iter()
-            .map(|(id, bytes)| (path_for(*id), bytes))
+            .keys()
+            .map(|id| (path_for(*id), &self.file_hashes[id]))
             .collect();
         files.sort_by(|a, b| a.0.cmp(&b.0));
         for (path, bytes) in files {
             add(path.as_bytes());
-            add(bytes.as_slice());
+            add(bytes);
         }
         for font in &self.font_hashes {
             add(font);
@@ -214,14 +231,17 @@ impl World for MemoryWorld {
     }
     fn source(&self, id: FileId) -> FileResult<Source> {
         self.accessed.lock().unwrap().insert(id);
-        self.sources.get(&id).cloned().ok_or_else(|| {
-            if self.files.contains_key(&id) {
-                FileError::InvalidUtf8
-            } else {
-                FileError::NotFound(id.vpath().get_without_slash().into())
-            }
-        })
+        if let Some(source) = self.sources.get(&id) {
+            return Ok(source.clone());
+        }
+        let bytes = self
+            .files
+            .get(&id)
+            .ok_or_else(|| FileError::NotFound(id.vpath().get_without_slash().into()))?;
+        let text = std::str::from_utf8(bytes.as_slice()).map_err(|_| FileError::InvalidUtf8)?;
+        Ok(Source::new(id, text.into()))
     }
+
     fn file(&self, id: FileId) -> FileResult<Bytes> {
         self.accessed.lock().unwrap().insert(id);
         self.files
