@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { createCompiler } from "../dist/node.js";
+import { Compiler } from "../dist/compiler.js";
 import { instantiate } from "../dist/core.js";
 
 execFileSync(
@@ -83,6 +84,142 @@ try {
 } finally {
   resolver.dispose();
 }
+
+const htmlSource = await createCompiler({
+  files: { "main.typ": "= Results😀\nA *strong* result." },
+});
+try {
+  const mapped = await htmlSource.compileHtml({ sourceMap: true });
+  assert.ok(mapped.sourceMap.length > 0);
+  assert.match(mapped.html, /data-typst=/);
+  assert.ok(
+    mapped.sourceMap.some(
+      (entry) => entry.location.from === 2 && entry.location.to === 11,
+    ),
+  );
+  assert.deepEqual((await htmlSource.compileHtml()).sourceMap, []);
+} finally {
+  htmlSource.dispose();
+}
+
+// A semantic query alone discovers a package manifest and its entrypoint in
+// separate native passes, even with syntactically incomplete source. No layout.
+const packageSource = '#import "@preview/test:0.1.0": *\n#';
+const packageFiles = {
+  "@preview/test:0.1.0/typst.toml":
+    '[package]\nname = "test"\nversion = "0.1.0"\nentrypoint = "lib.typ"',
+  "@preview/test:0.1.0/lib.typ": "#let package-function(x) = x",
+};
+const semanticRequests = [];
+const semantic = await createCompiler({
+  files: { "main.typ": packageSource },
+  resolveFile: async (path) => {
+    semanticRequests.push(path);
+    return packageFiles[path] ?? null;
+  },
+});
+try {
+  const result = await semantic.completion("main.typ", packageSource.length);
+  assert.ok(result.items.some((item) => item.label === "package-function"));
+  assert.deepEqual(semanticRequests, Object.keys(packageFiles));
+  const revision = (await semantic.stats()).revision;
+  await assert.rejects(semantic.pdf(revision), /compile|output/i);
+  await semantic.completion("main.typ", packageSource.length);
+  assert.equal(semanticRequests.length, 2, "warm queries reuse admitted files");
+  const imported = '#import "@preview/test:0.1.0": *\n#package-function(1)';
+  await semantic.putFile("main.typ", imported);
+  const cursor = imported.lastIndexOf("package-function") + 4;
+  assert.equal(
+    (await semantic.definition("main.typ", cursor)).path,
+    "@preview/test:0.1.0/lib.typ",
+  );
+  assert.ok(await semantic.hover("main.typ", cursor));
+  await assert.rejects(
+    semantic.rename("main.typ", cursor, "changed"),
+    /package/i,
+  );
+  assert.equal(semanticRequests.length, 2);
+} finally {
+  semantic.dispose();
+}
+
+// Resolver refusal terminates discovery instead of looping.
+let refused = 0;
+const missing = await createCompiler({
+  files: { "main.typ": packageSource },
+  resolveFile: async () => {
+    refused++;
+    return null;
+  },
+});
+try {
+  const result = await missing.completion("main.typ", packageSource.length);
+  assert.ok(!result.items.some((item) => item.label === "package-function"));
+  assert.equal(refused, 1);
+} finally {
+  missing.dispose();
+}
+
+// Mutating/disposal while a semantic resolver waits rejects its obsolete answer.
+for (const action of ["mutate", "dispose"]) {
+  let entered;
+  let release;
+  const waiting = new Promise((resolve) => {
+    entered = resolve;
+  });
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  const current = await createCompiler({
+    files: { "main.typ": packageSource },
+    resolveFile: async (_path, signal) => {
+      entered();
+      await gate;
+      return packageFiles["@preview/test:0.1.0/typst.toml"];
+    },
+  });
+  try {
+    const pending = current.completion("main.typ", packageSource.length);
+    const rejected = assert.rejects(pending, /superseded|disposed/);
+    await waiting;
+    if (action === "mutate")
+      await current.putFile("main.typ", "Current source");
+    else current.dispose();
+    release();
+    await rejected;
+    if (action === "mutate")
+      assert.equal((await current.compile()).success, true);
+  } finally {
+    release();
+    current.dispose();
+  }
+}
+
+// Fatal transport errors retain their actionable diagnostic during semantic
+// resolution, even though the transport terminates before the promise resumes.
+let receiveFatal;
+const fatal = new Compiler(
+  {
+    listen(onMessage) {
+      receiveFatal = onMessage;
+      return () => {};
+    },
+    post({ id }) {
+      queueMicrotask(() =>
+        receiveFatal({
+          id,
+          ok: false,
+          error: "WASM trap: unreachable",
+          fatal: true,
+        }),
+      );
+    },
+    terminate() {},
+  },
+  { resolveFile: async () => null },
+);
+await assert.rejects(fatal.completion("main.typ", 0), /WASM trap: unreachable/);
+assert.equal(fatal.isDisposed, true);
 
 // Typst bounds infinite loops; the host also enforces a hard worker deadline.
 const untrusted = await createCompiler({

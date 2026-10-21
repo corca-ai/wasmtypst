@@ -451,3 +451,46 @@ fn native_math_fragments_retain_equation_styles() {
     assert!(fragment.contains("text-align: right"), "{fragment}");
     assert!(fragment.contains("<mtable"), "{fragment}");
 }
+
+#[test]
+fn html_source_map_preserves_dom_shape_and_native_utf16_spans() {
+    let source = "= Results😀\n\nA *strong* result.\n\n#include \"section.typ\"\n#html.elem(\"span\", attrs: (\"data-typst\": \"forged\"))[Safe]\n#html.elem(\"span\", attrs: (\"DATA-TYPST\": \"forged-upper\"))[Upper]\n#html.elem(\"span\", attrs: (\"DaTa-TyPsT\": \"forged-mixed\"))[Mixed]";
+    let mut e = engine(source);
+    e.put("section.typ", "Included 결과".as_bytes().to_vec())
+        .unwrap();
+    let plain = e.compile_html();
+    let mapped = e
+        .request(json!({"op":"compileHtml","sourceMap":true,"math":true}))
+        .unwrap();
+    assert_eq!(mapped["success"], true, "{mapped}");
+    let html = mapped["html"].as_str().unwrap();
+    assert!(!html.contains("forged"));
+    assert!(html.contains("<strong"));
+    let entries = mapped["sourceMap"].as_array().unwrap();
+    assert!(
+        entries
+            .iter()
+            .any(|entry| entry["location"]["path"] == "section.typ")
+    );
+    assert!(
+        entries
+            .iter()
+            .any(|entry| entry["location"]["path"] == "main.typ"
+                && entry["location"]["from"] == 2
+                && entry["location"]["to"] == 11)
+    );
+    for entry in entries {
+        assert!(html.contains(&format!("data-typst=\"{}\"", entry["id"].as_str().unwrap())));
+        if !entry["text"].is_null() {
+            assert!(entry["text"]["to"].as_u64() >= entry["text"]["from"].as_u64());
+        }
+    }
+    assert_eq!(e.compile_html()["html"], plain["html"]);
+    assert!(e.compile_html()["sourceMap"].as_array().unwrap().is_empty());
+    e.put("main.typ", b"New source".to_vec()).unwrap();
+    let next = e
+        .request(json!({"op":"compileHtml","sourceMap":true}))
+        .unwrap();
+    assert_ne!(mapped["revision"], next["revision"]);
+    assert!(!next["html"].as_str().unwrap().contains("Results"));
+}

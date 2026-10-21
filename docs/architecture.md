@@ -51,7 +51,14 @@ resolved definition spans across admitted source files. Rename returns a
 revision-bound edit plan, respects lexical shadowing, refuses package edits,
 and conservatively rejects names that could collide with existing identifiers.
 It supports identifier bindings, including imports; it does not rename labels
-or arbitrary textual occurrences. No language query mutates source.
+or arbitrary textual occurrences. Semantic queries (completion, hover,
+definition, references and rename) resolve native World misses through the same
+host resolver, including when Source is incomplete and no output has compiled.
+Each newly admitted file retries the native operation; a read-only missing-files
+query avoids layout and import scanning. Resolver refusal preserves the native
+answer/error. The same 64-round, attempted-path, epoch, deadline and disposal
+fences apply as compilation. No language query edits source; admitting dependencies
+advances the revision and invalidates previous output, which hosts must refresh.
 
 Formatting uses Typstyle and refuses syntactically invalid documents. Tokens
 classify the actual syntax tree, rather than applying regexes to source.
@@ -222,3 +229,16 @@ Node process peak RSS in fresh processes, separately from observed WASM high
 water. Browser observations cover WASM memory; they do not claim browser-process
 RSS. The default 512 MiB choice supports the qualified full-resolution tutorial
 without changing source images or raising the syntax parser ceiling.
+
+## HTML source provenance
+
+`compileHtml({sourceMap: true})` annotates existing elements with reserved
+`data-typst` identifiers and returns native UTF-16 source spans. Direct Text
+node records include their child index and interval after adjacent text
+coalescing. No wrapper nodes or rendered text are inserted. Source-authored
+reserved attributes are removed before engine identifiers are assigned.
+The index belongs to the HTML revision; normal HTML export has no index and
+keeps its original shape. Hosts validate the actual DOM child/text interval
+and source snapshot before interpreting a printed character as an exact caret.
+Computed/represented output can retain an enclosing native source span instead.
+The index conveys navigation provenance, never write authority or trusted HTML.
