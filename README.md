@@ -256,22 +256,45 @@ No network, persistence or cache is added to the compiler engine or core import.
 
 ## Representative document qualification
 
-`bun run test:corpus` runs the same five documents in Node, Chromium, Firefox
-and WebKit: a multi-file research article with bibliography and SVG, the
-unmodified charged-ieee 0.1.4 template, Korean/Japanese/Chinese text using a
-project font, cmarker 0.1.8 with its real WASM plugin, and a synthetic 24-chapter
-research document. Locked dependencies are preloaded into an offline cache.
-It checks page counts, byte-identical PDF output across runtimes, real PDF/SVG
-export, semantic HTML,
-incremental edits, stale-output refusal and missing-font/glyph diagnostics.
-Provenance and font licenses live in `tests/fixtures/README.md`.
+`bun run test:corpus` verifies 18 contracts in Node, Chromium, Firefox and
+WebKit, plus a narrow-viewport Chromium host with 4x page CPU throttling:
 
-The raw `report/corpus.json` records engine/build identity, browser versions,
-initialization time, per-document first/warm compile times, diagnostics and WASM
-linear-memory high water marks. `CORPUS_SAMPLES=25 bun run test:corpus` collects
-more editing samples. A fourth browser pass uses a narrow mobile viewport and
-4x **page** CPU throttling; this does not establish throttling of the compiler
-Worker or the behavior of a physical mobile device. The corpus enforces a 96 MiB
-WASM linear-memory budget, separately from the engine's 256 MiB maximum.
-Times are observations, not portable latency guarantees.
-These desktop browsers do not certify mobile devices or arbitrary templates.
+- 12 supported documents: the original five cases, mathematical proofs and
+  matrices, CSV/JSON reporting, multilingual CRLF source, page/column/grid layout,
+  upstream Elsevier and mathematical-paper examples, and an explicitly adapted
+  image-heavy finite-volume tutorial.
+- Two original upstream examples with known old-API incompatibilities,
+  reproduced with the official native Typst 0.15.1 CLI.
+- One full-resolution image document that compiles but traps during WASM PDF
+  export near the 256 MiB heap limit; a fresh Worker must recover afterward.
+- Three intentional refusals (malformed source, unapproved package, invalid
+  bibliography), each followed by a valid document in the same Worker.
+
+A passing gate means these support/refusal/limitation contracts match; it does
+not mean all 18 documents export successfully. Source commits, exact bytes,
+SHA-256 identities, licenses and derived-image provenance are retained under
+`tests/fixtures/`. Dependencies are preloaded into a verified offline cache.
+The external documents are upstream examples, not a corpus of private user
+projects. See `tests/fixtures/README.md` for attribution and adaptation details.
+
+Supported documents must export byte-identical PDFs across runtimes, preserve
+expected PDF text through the independent Poppler reader, rasterize their
+first/last pages, and pass SVG, HTML content, incremental-edit and stale-output
+checks. Layout-specific HTML omissions are explicit contracts with diagnostics;
+PDF success does not establish equivalent HTML layout or complete HTML content.
+Elsevier's original example deliberately retains its fallback-font warnings.
+
+The raw `report/corpus.json` records status, project group, engine identity,
+browser versions, per-document initialization/first/warm times, diagnostics and
+WASM memory. PDFs, text, HTML and page PNGs live in `report/corpus/`.
+`TYPST_NATIVE_BIN=/path/to/typst bun run test:corpus:native` records the separate
+native comparison in `report/native-corpus.json`. These artifacts are ignored
+locally and uploaded by CI.
+
+`CORPUS_SAMPLES=25 bun run test:corpus` collects more editing samples. The
+original five cases reuse one World; extended documents each own a project
+Worker and reuse it for their edits, disposing it on project close. Successful
+project groups retain the 96 MiB WASM linear-memory budget; the full-resolution
+stress case is separately classified and isolated. Neither budget bounds total
+browser memory. Page CPU throttling does not certify Worker CPU throttling or
+physical mobile devices. Times are observations, not portable guarantees.

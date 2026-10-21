@@ -189,6 +189,21 @@ and timing. The long fixture is generated academic content; CJK glyph coverage
 is deliberately limited to the redistributable subset's fixture text.
 
 The corpus additionally compares PDF SHA-256 across runtimes and enforces a
-96 MiB linear-memory high-water budget for these five workloads. A narrow
+96 MiB linear-memory high-water budget for successful project groups. A narrow
 Chromium viewport with 4x page CPU throttling is an additional host scenario;
 it is not a measurement of throttled Worker CPU or a physical mobile device.
+
+The expanded corpus preserves upstream original files and tests old-API
+incompatibilities against a separate official native CLI. Known failures must
+match their exact diagnostic and source path; an unrelated failure is not an
+accepted result. Synthetic refusals require a subsequent successful snapshot
+and PDF export in the same Worker. The full-resolution image case uses its own
+Worker, reproduces a fatal PDF-export trap and verifies fresh-Worker recovery;
+it is reported as a known resource limit, not a supported export. Its adapted,
+explicitly downsampled counterpart is qualified separately.
+
+The original five scenarios share one World. Extended scenarios represent
+separate projects and dispose their Workers on close, while retaining the same
+World for edits within each document. The report records this grouping. These
+measurements do not promise a 96 MiB limit when unrelated projects are retained
+indefinitely in one World, nor a complete HTML projection of layout constructs.

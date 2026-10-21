@@ -52,3 +52,60 @@ pyftsubset NotoSansCJKkr-Regular.otf \
 ```
 
 The new fonts are test assets, not additional fonts bundled into the SDK runtime.
+
+## Expanded synthetic and external corpus
+
+Four additional authored documents exercise proof blocks, matrix/cases/integral
+math, numbered equations, CSV/JSON-driven tables and column spans, lists,
+vector images, Latin/Greek/Cyrillic/CJK text, CRLF source, columns, page headers,
+footers, placement, grid and footnotes. Three intentionally invalid projects
+exercise syntax, unauthorized package and bibliography refusal plus recovery.
+
+External source is pinned to typst/packages commit
+`574e4acdf56b4f2f812e9366bed0688746143030`:
+
+| Example | Fixture root | Outcome on Typst 0.15.1 |
+| --- | --- | --- |
+| Springer contributed chapter | `upstream/springer-spaniel/0.1.0/template/` | Old ctheorems `state.display()` API fails in both WASM and native |
+| Elsevier article | `upstream/elsearticle/3.1.0/template/` | Six-page PDF; original XITS/STIX fallback warnings are retained |
+| Mathematical paper | `upstream/clean-math-paper/0.2.8/template/` | Three-page PDF with equations, theorem/proof and references |
+
+Eighteen package versions, including transitive dependencies, are retained
+with their upstream LICENSE files. `corpus/resources.json` locks runtime
+package files; `corpus/upstream.json` separately hashes all copied sources,
+licenses and assets. The corpus verifies both inventories before compiling.
+Third-party `.typ` files and CRLF line endings are not reformatted.
+
+`upstream/lapreprint/` is the unmodified source and used PNG assets of
+LaPreprint/typst commit `c908cd05da8e13eb8add652a613d00add73d1f58`, including
+`examples/pixels/main.typ`, its bibliography and `lapreprint.typ`. This is the
+external finite-volume tutorial example “Pixels and their Neighbours,” credited
+to Rowan Cockett, Lindsey Heagy and Douglas Oldenburg; original publication
+DOI: https://doi.org/10.1190/tle35080703.1. The repository's MIT license is
+retained. The document separately states CC BY-SA 3.0 for article content;
+that original notice, attribution and bibliography remain intact, with a copy
+of the linked license in `licenses/CC-BY-SA-3.0.txt`. Its article images and
+derivatives retain that license, rather than the SDK's MIT license.
+
+The original template fails under the old `locate(callback)` API on both the
+native CLI and WASM. A separately named compatibility variant in `cases.mjs`
+prepends `locate(callback) = context callback(here())`, removes the obsolete
+argument to `counter(page).final`, supplies context to the page counter display,
+and replaces `image.decode(orcidSvg)` with `image(bytes(orcidSvg))`. Exact
+single-occurrence replacements are checked; original files remain unchanged.
+Deprecated paragraph spacing and raw-text warnings remain visible.
+
+The API-adapted variant with original 4000-pixel figures compiles to seven
+pages, but exceeds the WASM PDF-export resource budget; native PDF export
+succeeds. The separately qualified browser-sized variant uses derivatives in
+`corpus/finite-volume-images/`. Pillow 11.3.0 generated them with
+`image.thumbnail((1200, 1200), Image.Resampling.LANCZOS)` and
+`image.save(destination, optimize=True)`. No source prose or equations were
+removed. `corpus/derived-images.json` records source paths, original/resulting
+dimensions, lengths and SHA-256 hashes. These resized test assets are explicit
+fixture derivatives, not automatic image modification by the SDK.
+
+`noto-sans/NotoSans.ttf` is the unmodified variable Noto Sans font from
+`google/fonts@47d54ca1ebb14fd864695f1d39dc734f39017c33`,
+`ofl/notosans/NotoSans[wdth,wght].ttf`, with its OFL license. It supplies the
+LaPreprint example's requested font and is only a test asset.

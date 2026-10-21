@@ -39,7 +39,17 @@ jobs:
         run: cargo install wasm-bindgen-cli --version 0.2.128 --locked
       - run: bun run build
       - run: bunx playwright install --with-deps chromium firefox webkit
+      - name: Install PDF reader and pinned native reference
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+          curl --fail --location --retry 3 https://github.com/typst/typst/releases/download/v0.15.1/typst-x86_64-unknown-linux-musl.tar.xz --output /tmp/typst-native.tar.xz
+          echo 'a6d077d0a95eed5a2eba715b2dae06be954f624ccbf85758a03f389ded33118c  /tmp/typst-native.tar.xz' | sha256sum --check
+          tar -xJf /tmp/typst-native.tar.xz -C /tmp
       - run: bun run check
+      - run: bun run test:corpus:native
+        env:
+          TYPST_NATIVE_BIN: /tmp/typst-x86_64-unknown-linux-musl/typst
       - run: bun run benchmark
       - run: node scripts/package-release.mjs
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7

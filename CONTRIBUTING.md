@@ -15,3 +15,16 @@ CI builds the WASM from the pinned source, tests all three browser engines and
 an isolated package consumer, and uploads the package, checksums and provenance.
 A passing CI artifact is a candidate, not an automatic public release. Published
 release assets must be immutable; fix an artifact under a new version.
+
+Document corpus gates also require Poppler (`pdftotext`, `pdftoppm`; install
+`poppler-utils` on Ubuntu or `poppler` on macOS). They export PDFs, extract
+expected text and rasterize the first/last pages into ignored `report/corpus/`.
+`CORPUS_SAMPLES=25 bun run test:corpus` runs the longer edit workload.
+
+For independent upstream qualification, obtain the official Typst 0.15.1 CLI
+and run `TYPST_NATIVE_BIN=/absolute/path/to/typst bun run test:corpus:native`.
+CI runs this separately with a SHA-256-pinned Linux release archive. It confirms
+which original templates also fail natively and whether the full-resolution
+image document exports outside the browser memory limit. Keep upstream source
+and asset hashes in `tests/fixtures/corpus/upstream.json`; preserve originals
+and document adaptations separately instead of silently patching vendor files.

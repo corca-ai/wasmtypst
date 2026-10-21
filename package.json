@@ -72,7 +72,8 @@
     "format:check": "biome format .",
     "benchmark": "bun run node scripts/benchmark.mjs",
     "test:resources": "bun run node tests/resources.mjs",
-    "test:corpus": "bun run node tests/corpus.mjs"
+    "test:corpus": "bun run node tests/corpus.mjs",
+    "test:corpus:native": "bun run node tests/native-corpus.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.3",

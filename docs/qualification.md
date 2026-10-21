@@ -160,3 +160,60 @@ Raw build provenance, per-case samples, diagnostics and memory live in ignored
 `report/corpus-25-samples.json`); CI uploads its own record with qualification
 artifacts. No compiler speedup, smaller runtime or physical-mobile qualification
 is claimed by this change.
+
+## Expanded corpus: external examples and explicit failures
+
+The next PR #3 revision expands the gate to 18 cases, rather than treating
+compilation success on a handful of short examples as broad compatibility.
+The 12 successful documents include four new authored edge-case documents,
+unmodified Elsevier and mathematical-paper templates, and a separately adapted
+seven-page finite-volume tutorial. Source commits, licenses, byte lengths and
+SHA-256 are checked before execution. Poppler extracts expected text (including
+CJK), rasterizes first/last pages, and exports local PDF/HTML/text/PNG evidence.
+Representative rasterized pages were visually inspected locally.
+
+The other six cases are explicit contracts, not successful-document claims:
+
+- Springer 0.1.0 fails in ctheorems 1.1.2 on `state.display()`; original
+  LaPreprint fails on the obsolete `locate(callback)` form. Official native
+  Typst 0.15.1 reproduces both errors, so these are upstream version
+  incompatibilities. The originals are preserved; unrelated diagnostics fail
+  the gate.
+- The API-adapted finite-volume source with full-resolution original images
+  lays out seven pages but traps at WASM PDF export. Images represent about
+  185 MiB as RGBA; a focused direct-engine probe observed 231,669,760 bytes
+  before export and 265,879,552 bytes after the trap, near the fixed 256 MiB
+  maximum. The official native CLI exports this same source/assets successfully.
+  This is a real SDK resource limitation. The gate checks the observed failure
+  and a successful fresh-Worker recovery; no heap cap was raised.
+- Invalid syntax, an unapproved package and malformed bibliography must each
+  produce the specified diagnostics, then accept a valid replacement snapshot
+  and export PDF in that same Worker.
+
+Layout HTML may omit entire columns and grids, not merely change their
+appearance. The authored layout case records the exact native warnings and
+missing grid text; its PDF must retain that text. Elsevier also retains its
+explicit unknown XITS/STIX font warnings while using bundled fallback fonts.
+The browser-sized tutorial is a separate adaptation: old APIs are shimmed and
+figures explicitly resampled to at most 1200 pixels, with provenance and
+CC BY-SA attribution retained. It is not proof that original full-resolution
+exports work.
+
+A 25-edit run passed the 18 contracts in Node, all three browser engines and
+the extra Chromium host. Successful PDF bytes matched across runtimes.
+Extended cases use one Worker per project, disposed on project close; edits
+reuse that project's World. The original five cases still share one World.
+The maximum observed successful-project linear-memory high water was about
+76.7 MiB, below the unchanged 96 MiB gate. A separate diagnostic run retaining
+all unrelated extended projects in one Worker reached about 107.9 MiB; this
+is why the project lifecycle and measurement scope are explicit. This revision
+does not reduce the compiler's memory use or certify arbitrary project histories.
+
+For the adapted seven-page tutorial, local 25-edit warm compile p95 was
+4.79 ms in Node, 4.77 ms in Chromium, 18.90 ms in Firefox and 9.70 ms in WebKit.
+These measurements exclude export and paint. Raw records are retained as
+`report/corpus-expanded-25-samples.json`, with independent native results in
+`report/native-corpus.json`. CI runs its own 18-case qualification and seven
+upstream native comparisons using the official 0.15.1 release archive pinned
+by SHA-256. Package/font bytes remain test-only and are not added to the compiler
+runtime or its download.
