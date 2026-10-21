@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WasmTypst</title>
+<link rel="stylesheet" href="/web/style.css">
+<header><h1>WasmTypst</h1><span>Typst in your browser</span><button id="compile" disabled>Compile</button><button id="download" disabled>Download PDF</button><output id="status" role="status">Preparing compiler…</output></header>
+<main><section><label for="source">Typst source</label><textarea id="source" spellcheck="false" aria-label="Typst source">#set page(paper: "a4", margin: 24mm)
+#set text(size: 11pt)
+= A single world
+
+This document compiles locally in your browser. Edit this text, then click the preview to return to its source.
+
+$ integral_0^1 x^2 dif x = 1/3 $
+
+#figure(rect(width: 80pt, height: 35pt, fill: rgb("#e0edff")), caption: [A figure with source navigation.])
+
+#table(columns: 2, [Method], [Result], [Browser compiler], [PDF + SVG])
+</textarea><pre id="diagnostics" aria-live="polite"></pre></section><section id="preview" aria-label="Document preview"></section></main>
+<script type="module" src="/web/demo.js"></script>
+</html>
