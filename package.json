@@ -1,6 +1,6 @@
 {
   "name": "wasmtypst",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Single-world Typst compiler, language services and source navigation for browsers and Node",
   "type": "module",
   "license": "MIT",
@@ -50,15 +50,20 @@
     "./html-preview": {
       "types": "./dist/html-preview.d.ts",
       "import": "./dist/html-preview.js"
-    }
+    },
+    "./syntax": {
+      "types": "./dist/syntax.d.ts",
+      "import": "./dist/syntax.js"
+    },
+    "./syntax-wasm": "./dist/syntax/wasmtypst_syntax_bg.wasm"
   },
   "scripts": {
     "build": "bun run scripts/build.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "cargo test --locked && bun run node tests/sdk.mjs && bun run node tests/production.mjs",
+    "test": "cargo test --locked --workspace && bun run node tests/sdk.mjs && bun run node tests/production.mjs && bun run node tests/syntax.mjs",
     "test:browser": "bun run node tests/browser.mjs",
     "test:package": "bun run node tests/package.mjs",
-    "check": "bun run format:check && cargo fmt --check && cargo clippy --locked --all-targets -- -D warnings && bun run typecheck && bun run test && bun run test:browser && bun run test:package",
+    "check": "bun run format:check && cargo fmt --check && cargo clippy --locked --workspace --all-targets -- -D warnings && bun run typecheck && bun run test && bun run test:browser && bun run test:package",
     "serve": "bun run node scripts/serve.mjs",
     "format:check": "biome format .",
     "benchmark": "bun run node scripts/benchmark.mjs"

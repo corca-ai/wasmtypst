@@ -20,6 +20,8 @@ optional; the integrating application owns source, collaboration and history.
 | `wasmtypst/html-preview` | Scriptless sandboxed semantic HTML view |
 | `wasmtypst/monaco` | Optional Monaco language providers and diagnostics adapter |
 | `wasmtypst/wasm` | Released WASM asset |
+| `wasmtypst/syntax` | Small synchronous official parser after async initialization |
+| `wasmtypst/syntax-wasm` | Syntax-only WASM asset |
 
 ```ts
 import { createCompiler } from 'wasmtypst';
@@ -193,3 +195,27 @@ session.dispose();
 `bun run benchmark` measures a multi-section article with paragraphs, equations
 and tables, with and without a 16 MiB binary. It reports warm percentiles, cold
 initialization, linear memory and process peak RSS separately.
+
+## Source-preserving visual editors
+
+```ts
+import { createSyntaxParser } from 'wasmtypst/syntax';
+const parser = await createSyntaxParser();
+const tree = parser.parse('= Heading\nA *strong* _emphasized_ document.');
+// Every node: kind, UTF-16 from/to, children, and optional decoded value/block.
+```
+
+The syntax entry loads a separate 291 kB raw parser built from exactly the
+compiler's Typst 0.15.1 grammar. It includes no fonts, layout engine, World or
+compiler. Parsing is synchronous and stateless after initialization; the host
+owns its projection, edits and collaboration. Unknown syntax kinds must remain
+source in a visual editor. Input is bounded to 8,000,000 UTF-8 bytes; serialization
+refuses trees exceeding 262,144 nodes or depth 256. These are admission limits,
+not a whole-process memory or main-thread latency guarantee. Node callers supply
+bytes from `wasmtypst/syntax-wasm` explicitly.
+
+`compiler.compileHtml({ math: true })` returns `math` entries with source
+locations and native MathML from the same compiled document and revision.
+No second equation compiler guesses source context. The default leaves `math`
+empty and avoids fragment extraction. Fragment HTML remains untrusted; isolate
+it or sanitize with a restrictive MathML policy before placing it in a host DOM.

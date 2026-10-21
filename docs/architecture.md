@@ -149,3 +149,21 @@ exhaustion becomes a fatal worker error; CompilerSession recreates the worker
 for the next supplied snapshot. This bounds the engine's linear heap, not JS
 buffers, compiled code or process RSS. Tests exercise actual memory growth
 refusal and recovery after an excessive syntax-tree allocation.
+
+## Syntax-only editor parser
+
+`wasmtypst/syntax` initializes a small independent WASM module with the exact
+same typst-syntax pin. It performs no evaluation and holds no World or document.
+Its synchronous parser exports the official syntax kinds, original UTF-16
+ranges, decoded escapes/shorthands/string literals and equation block flags.
+Editors retain unknown kinds verbatim. Admission caps bytes and tree traversal;
+valid input after an ordinary size/serialization refusal remains usable. The
+module's realm-scoped linear memory has a high-water mark, like other WASM;
+these limits do not establish a hard process-memory or parsing-time sandbox.
+
+HTML math extraction is opt-in. The compiler walks its actual HtmlDocument,
+serializes MathML roots whose spans resolve to admitted sources and returns
+those ranges against the compile revision. A source edit invalidates the
+cached HTML and math together. HTML with and without math use distinct cache
+options; the host must match a fragment to its captured source before paint.
+Raw MathML fragments are not trusted DOM and convey no edit authority.

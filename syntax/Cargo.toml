@@ -1,0 +1,16 @@
+[package]
+name = "wasmtypst-syntax"
+version = "0.3.0"
+edition = "2024"
+rust-version = "1.96"
+license = "MIT"
+description = "The pinned Typst syntax parser for source-preserving browser editors"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+typst-syntax = "=0.15.1"
+serde = { version = "1", features = ["derive"] }
+serde-wasm-bindgen = "0.6"
+wasm-bindgen = "=0.2.128"

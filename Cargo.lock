@@ -3022,7 +3022,7 @@ dependencies = [
 
 [[package]]
 name = "wasmtypst"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "comemo",
  "console_error_panic_hook",
@@ -3038,6 +3038,16 @@ dependencies = [
  "typst-pdf",
  "typst-svg",
  "typstyle-core",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "wasmtypst-syntax"
+version = "0.3.0"
+dependencies = [
+ "serde",
+ "serde-wasm-bindgen",
+ "typst-syntax",
  "wasm-bindgen",
 ]
 
