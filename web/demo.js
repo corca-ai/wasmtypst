@@ -56,18 +56,22 @@ async function compile() {
     running = false;
   }
 }
-try {
-  compiler = await createCompiler();
-  preview = new Preview(document.querySelector("#preview"), compiler);
-  preview.addEventListener("navigate", ({ detail }) => {
+function bindPreview(view) {
+  if (!(view instanceof Preview)) return;
+  view.addEventListener("navigate", ({ detail }) => {
     if (accepted && detail?.path === "main.typ") {
       source.focus();
       source.setSelectionRange(detail.from, detail.to);
     }
   });
-  preview.addEventListener("error", ({ detail }) => {
+  view.addEventListener("error", ({ detail }) => {
     status.textContent = String(detail);
   });
+}
+try {
+  compiler = await createCompiler();
+  preview = new Preview(document.querySelector("#preview"), compiler);
+  bindPreview(preview);
   mode.addEventListener("change", () => {
     preview.dispose();
     preview =
@@ -76,6 +80,7 @@ try {
             title: "HTML document preview",
           })
         : new Preview(document.querySelector("#preview"), compiler);
+    bindPreview(preview);
     void compile();
   });
   button.disabled = false;
@@ -84,9 +89,6 @@ try {
   source.addEventListener("input", () => {
     accepted = undefined;
     download.disabled = true;
-    void compiler.putFile("main.typ", source.value).catch((error) => {
-      status.textContent = String(error);
-    });
     clearTimeout(timer);
     timer = setTimeout(compile, 200);
   });
