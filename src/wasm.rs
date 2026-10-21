@@ -53,6 +53,9 @@ impl TypstEngine {
             .svg(revision, page)
             .map_err(|e| JsValue::from_str(&e))
     }
+    pub fn memory_limit(&self) -> u32 {
+        crate::WASM_MEMORY_LIMIT_BYTES
+    }
     pub fn revision(&self) -> u32 {
         self.inner.revision
     }

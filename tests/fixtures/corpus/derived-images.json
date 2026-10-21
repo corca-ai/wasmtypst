@@ -1,0 +1,100 @@
+[
+  {
+    "source": "upstream/lapreprint/examples/pixels/files/dc-eqns.png",
+    "fixture": "corpus/finite-volume-images/dc-eqns.png",
+    "sourceSize": [
+      4000,
+      2555
+    ],
+    "size": [
+      1200,
+      767
+    ],
+    "bytes": 194582,
+    "sha256": "6407b82df5862b75ff158342a80eb0023c0d8d3a949582f13a4f1f36d461e7e5"
+  },
+  {
+    "source": "upstream/lapreprint/examples/pixels/files/dc-results.png",
+    "fixture": "corpus/finite-volume-images/dc-results.png",
+    "sourceSize": [
+      3549,
+      1440
+    ],
+    "size": [
+      1200,
+      487
+    ],
+    "bytes": 530956,
+    "sha256": "71b5140176c3fddb9369157fe65537b057a8171de1ce767569560080c1d948a4"
+  },
+  {
+    "source": "upstream/lapreprint/examples/pixels/files/dc-setup.png",
+    "fixture": "corpus/finite-volume-images/dc-setup.png",
+    "sourceSize": [
+      4000,
+      2120
+    ],
+    "size": [
+      1200,
+      636
+    ],
+    "bytes": 250710,
+    "sha256": "d176fcdac141c227a9ed07a66bbc18f9e53b387a69c5bba77d264fba293b5416"
+  },
+  {
+    "source": "upstream/lapreprint/examples/pixels/files/divergence.png",
+    "fixture": "corpus/finite-volume-images/divergence.png",
+    "sourceSize": [
+      4000,
+      910
+    ],
+    "size": [
+      1200,
+      273
+    ],
+    "bytes": 77071,
+    "sha256": "a517d6b0034d32fa32d918e2cf92255bfd41f316cc389a8c5355532e1f931c90"
+  },
+  {
+    "source": "upstream/lapreprint/examples/pixels/files/logo.png",
+    "fixture": "corpus/finite-volume-images/logo.png",
+    "sourceSize": [
+      568,
+      524
+    ],
+    "size": [
+      568,
+      524
+    ],
+    "bytes": 49110,
+    "sha256": "1f4ee5ee05fc9b6c5916f848950edbb57faf07a29453eed25ef40a9bb513465d"
+  },
+  {
+    "source": "upstream/lapreprint/examples/pixels/files/mesh.png",
+    "fixture": "corpus/finite-volume-images/mesh.png",
+    "sourceSize": [
+      4000,
+      1874
+    ],
+    "size": [
+      1200,
+      562
+    ],
+    "bytes": 107688,
+    "sha256": "cc1ad5ea4248a4b09a69a8ceff39bc6ab8a32add5defe3595d7c744089b85558"
+  },
+  {
+    "source": "upstream/lapreprint/examples/pixels/files/weak-formulation.png",
+    "fixture": "corpus/finite-volume-images/weak-formulation.png",
+    "sourceSize": [
+      4000,
+      3347
+    ],
+    "size": [
+      1200,
+      1004
+    ],
+    "bytes": 317116,
+    "sha256": "3fa58820435ae2c113d4ce12fa5f0461e3f820f597398103816ad97d55eccb4a"
+  }
+]

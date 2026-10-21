@@ -5,3 +5,4 @@
 /*.tgz
 
 .build.lock
+/tests/fixtures/.memory-profiles/

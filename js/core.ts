@@ -98,7 +98,7 @@ class EngineCore implements Core {
         return {
           revision: engine.revision(),
           wasmLinearMemoryBytes: memory?.buffer.byteLength ?? 0,
-          wasmLinearMemoryLimitBytes: 256 * 1024 * 1024,
+          wasmLinearMemoryLimitBytes: engine.memory_limit(),
           typstVersion: "0.15.1",
         };
     }

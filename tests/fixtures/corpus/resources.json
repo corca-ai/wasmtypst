@@ -1,0 +1,905 @@
+[
+  {
+    "path": "@preview/charged-ieee:0.1.4/lib.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/charged-ieee/0.1.4/lib.typ",
+    "fixture": "charged-ieee/lib.typ",
+    "bytes": 7160,
+    "sha256": "874df44320b3c60b9b09be60cf9e7ed006726ef502af39b0f4cdda5a30141ffc"
+  },
+  {
+    "path": "@preview/charged-ieee:0.1.4/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/charged-ieee/0.1.4/typst.toml",
+    "fixture": "charged-ieee/typst.toml",
+    "bytes": 671,
+    "sha256": "6f0ea7299fb45bca5e3568a25906373a3ad90ec34bbddd1d4c1f67c3faff28da"
+  },
+  {
+    "path": "@preview/cmarker:0.1.8/lib.typ",
+    "url": "https://raw.githubusercontent.com/corca-ai/wasmtypst/0bec495c9bc55b3cefe9e03eee07935354b21ceb/tests/fixtures/cmarker/lib.typ",
+    "fixture": "cmarker/lib.typ",
+    "bytes": 11076,
+    "sha256": "76e8fb47ff4986df44285c55e3252257e2dca3f86983df2e11851b369490ba0a"
+  },
+  {
+    "path": "@preview/cmarker:0.1.8/typst.toml",
+    "url": "https://raw.githubusercontent.com/corca-ai/wasmtypst/0bec495c9bc55b3cefe9e03eee07935354b21ceb/tests/fixtures/cmarker/typst.toml",
+    "fixture": "cmarker/typst.toml",
+    "bytes": 343,
+    "sha256": "1bba3fdde95f0eb2b222f1826c5c8baf823a2deb74e957cb84656585d7cc45e5"
+  },
+  {
+    "path": "@preview/cmarker:0.1.8/plugin.wasm",
+    "url": "https://raw.githubusercontent.com/corca-ai/wasmtypst/0bec495c9bc55b3cefe9e03eee07935354b21ceb/tests/fixtures/cmarker/plugin.wasm",
+    "fixture": "cmarker/plugin.wasm",
+    "bytes": 322606,
+    "sha256": "b82a60ac048a9d04b0a94a755e1ebe0387926e88f91d0d763a98a379445af330"
+  },
+  {
+    "path": "fonts/texgyrecursor-regular.otf",
+    "url": "https://mirrors.ctan.org/fonts/tex-gyre/opentype/texgyrecursor-regular.otf",
+    "fixture": "tex-gyre/texgyrecursor-regular.otf",
+    "bytes": 84652,
+    "sha256": "0667deb48aa0e88be8f499c4d308e8b9116f290e7f969b0f5a34ee15c9644272"
+  },
+  {
+    "path": "fonts/texgyretermes-bold.otf",
+    "url": "https://mirrors.ctan.org/fonts/tex-gyre/opentype/texgyretermes-bold.otf",
+    "fixture": "tex-gyre/texgyretermes-bold.otf",
+    "bytes": 139480,
+    "sha256": "2fb3e952065fa153c7e4e64e04b98b9d79225739b6025aa3f0f0782d299ff61e"
+  },
+  {
+    "path": "fonts/texgyretermes-bolditalic.otf",
+    "url": "https://mirrors.ctan.org/fonts/tex-gyre/opentype/texgyretermes-bolditalic.otf",
+    "fixture": "tex-gyre/texgyretermes-bolditalic.otf",
+    "bytes": 144180,
+    "sha256": "1bf6af99cb0e26c12951317032d79b96ae009551e59ccf02a5b24f325ecfec87"
+  },
+  {
+    "path": "fonts/texgyretermes-italic.otf",
+    "url": "https://mirrors.ctan.org/fonts/tex-gyre/opentype/texgyretermes-italic.otf",
+    "fixture": "tex-gyre/texgyretermes-italic.otf",
+    "bytes": 141324,
+    "sha256": "6dd103a1672e50568cd2f8a706ccd48443d44d7d073a59d2286f4e6f746575d6"
+  },
+  {
+    "path": "fonts/texgyretermes-regular.otf",
+    "url": "https://mirrors.ctan.org/fonts/tex-gyre/opentype/texgyretermes-regular.otf",
+    "fixture": "tex-gyre/texgyretermes-regular.otf",
+    "bytes": 140932,
+    "sha256": "cc3fe7c707b81428d23d54df3eadd9228a2bf6a4d43125d94df56f5f63134659"
+  },
+  {
+    "path": "fonts/NotoSansCJKkr-Subset.otf",
+    "url": "https://fixtures.invalid/corpus/NotoSansCJKkr-Subset.otf",
+    "fixture": "corpus/NotoSansCJKkr-Subset.otf",
+    "bytes": 13620,
+    "sha256": "e9431a70e547aee6ad46988b6550903c96a2a18f7cf6e6ebd70229bd82014284"
+  },
+  {
+    "path": "@preview/springer-spaniel:0.1.0/src/impl.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/springer-spaniel/0.1.0/src/impl.typ",
+    "fixture": "upstream/springer-spaniel/0.1.0/src/impl.typ",
+    "bytes": 6648,
+    "sha256": "e869fd948934b17716e07074b342afb4e7e38e14eb316817586e6da828085c06"
+  },
+  {
+    "path": "@preview/chromo:0.1.0/examples/example.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/chromo/0.1.0/examples/example.typ",
+    "fixture": "upstream/chromo/0.1.0/examples/example.typ",
+    "bytes": 1978,
+    "sha256": "219bae4c577a54b8085abb08312cf093d248f1077fafbdbd5e90d874576c1d32"
+  },
+  {
+    "path": "@preview/chromo:0.1.0/lib.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/chromo/0.1.0/lib.typ",
+    "fixture": "upstream/chromo/0.1.0/lib.typ",
+    "bytes": 2898,
+    "sha256": "9078a54d567c9abb9b3cec545e16943c73d9bec4e5e608323b8a8ab116df99e3"
+  },
+  {
+    "path": "@preview/chromo:0.1.0/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/chromo/0.1.0/typst.toml",
+    "fixture": "upstream/chromo/0.1.0/typst.toml",
+    "bytes": 440,
+    "sha256": "62d2e5e265b6c52c4d4d8d308183e1f55aa256ea9b681b9d315138da60c78942"
+  },
+  {
+    "path": "@preview/springer-spaniel:0.1.0/src/lib.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/springer-spaniel/0.1.0/src/lib.typ",
+    "fixture": "upstream/springer-spaniel/0.1.0/src/lib.typ",
+    "bytes": 388,
+    "sha256": "a8135d49513b4496976e14ed9ce78fe6954f7edc74a43e5dcc36d3df409d2523"
+  },
+  {
+    "path": "@preview/springer-spaniel:0.1.0/src/models/asterism.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/springer-spaniel/0.1.0/src/models/asterism.typ",
+    "fixture": "upstream/springer-spaniel/0.1.0/src/models/asterism.typ",
+    "bytes": 88,
+    "sha256": "b5144513121d3cbdd72f657d2d6ff2dac260644aa9effd0a2ae5fbb14a17590d"
+  },
+  {
+    "path": "@preview/springer-spaniel:0.1.0/src/models/sidecaption.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/springer-spaniel/0.1.0/src/models/sidecaption.typ",
+    "fixture": "upstream/springer-spaniel/0.1.0/src/models/sidecaption.typ",
+    "bytes": 396,
+    "sha256": "b6fd8d91bd153612ae0f08393bdd0134fd3db0c3974e232cabf72d9cc4840ea3"
+  },
+  {
+    "path": "@preview/springer-spaniel:0.1.0/src/package/board-n-pieces.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/springer-spaniel/0.1.0/src/package/board-n-pieces.typ",
+    "fixture": "upstream/springer-spaniel/0.1.0/src/package/board-n-pieces.typ",
+    "bytes": 327,
+    "sha256": "432b708a2ee425c02bc4f161dfcc002ae2aa7647eec8343e7f64f15e9c9dd27c"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/assets/bb.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/assets/bb.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/assets/bb.svg",
+    "bytes": 1270,
+    "sha256": "3ed2bb19629a70ddb8d0f971caa7251b0ab9bf01bcebaa4bac83f7aec0c6dd7a"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/assets/bw.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/assets/bw.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/assets/bw.svg",
+    "bytes": 1270,
+    "sha256": "30612a7aec659cd417d9bf258281c9d681896d7eacc3066fe1808cbb180d588a"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/assets/kb.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/assets/kb.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/assets/kb.svg",
+    "bytes": 1456,
+    "sha256": "025eea92e0ef8eb1fd06b1c58d0d112948f08bf66cea6b5d003659569949b41c"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/assets/kw.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/assets/kw.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/assets/kw.svg",
+    "bytes": 700,
+    "sha256": "56f55c784843b1ac272b8745d740aa2a3e6c585513ef889978916f88e5d0b70b"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/assets/nb.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/assets/nb.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/assets/nb.svg",
+    "bytes": 1598,
+    "sha256": "9b836351ecb399c64163b5e5083d17b67c1b7273728a369847ba8b1332ca243d"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/assets/nw.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/assets/nw.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/assets/nw.svg",
+    "bytes": 1306,
+    "sha256": "3b5d668e3caf7856d3c9c496d73c4b36d095cfda482929097defd7dbade20bc4"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/assets/pb.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/assets/pb.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/assets/pb.svg",
+    "bytes": 766,
+    "sha256": "4413bf7c18a341f9723d97e6f92c985e30b6167b037e80842cea59b7541bb074"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/assets/pw.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/assets/pw.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/assets/pw.svg",
+    "bytes": 766,
+    "sha256": "cc7de30708dcec8f4d593a89d10893d5f9c063682039a1c441e86c44cf2096db"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/assets/qb.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/assets/qb.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/assets/qb.svg",
+    "bytes": 1422,
+    "sha256": "70191a3fbc729ef629661e2419a66ab8024c49277aab8ccae3a5ef61372ab802"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/assets/qw.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/assets/qw.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/assets/qw.svg",
+    "bytes": 1087,
+    "sha256": "b72b864e2a5b6c8f8afb7f260130c10e649ff063f4ef58190c00a35c56364327"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/assets/rb.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/assets/rb.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/assets/rb.svg",
+    "bytes": 1818,
+    "sha256": "6abf617a9e26902e0734d85897c9ca55e29d7be2928142aa21032c38967e34ba"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/assets/rw.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/assets/rw.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/assets/rw.svg",
+    "bytes": 1173,
+    "sha256": "20d8dfd35151c288db1696630e16f5c25d6ead3f93dd65d776f162866b223dbb"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/chess-sym.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/chess-sym.typ",
+    "fixture": "upstream/board-n-pieces/0.4.0/chess-sym.typ",
+    "bytes": 640,
+    "sha256": "5e7e1f17c90ea9d7069833c5673d1da592a500d1f10410377119994c2a80921e"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/examples/example-1.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/examples/example-1.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/examples/example-1.svg",
+    "bytes": 68147,
+    "sha256": "1682c780d54483c6cd81afc9068e175e7f3eb78be2a3dca14929220415ae410c"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/examples/example-2.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/examples/example-2.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/examples/example-2.svg",
+    "bytes": 37886,
+    "sha256": "c9c5953df25b04d98dc05c967cadee58b0b8a08a76567e769396dcda51712ed1"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/examples/example-3.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/examples/example-3.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/examples/example-3.svg",
+    "bytes": 53714,
+    "sha256": "6afbb16cf23c1e58314929d2ea059c8abe5db9f4b17a8f238e65be3b5c4172c9"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/examples/example-4.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/examples/example-4.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/examples/example-4.svg",
+    "bytes": 56650,
+    "sha256": "5440d054f1d867f19da6cc2a59a19d10e2f59852ae161ceca0a20897c2754216"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/examples/example-5.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/examples/example-5.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/examples/example-5.svg",
+    "bytes": 33196,
+    "sha256": "c2842823961ff20f15ba6b3aa0d9e476d137924cfd714f19eec76356ac374964"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/examples/example-6.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/examples/example-6.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/examples/example-6.svg",
+    "bytes": 592935,
+    "sha256": "8d2fe2d04e35c31c79e642fd0e1586cdc9c3b79a718b40d250d924ef66cec11b"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/examples/example-7.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/examples/example-7.svg",
+    "fixture": "upstream/board-n-pieces/0.4.0/examples/example-7.svg",
+    "bytes": 63998,
+    "sha256": "2a0ce2c39535e0e330dbd837e01f15a95a43c77eb26effe185a781ac69c8f30d"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/internals.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/internals.typ",
+    "fixture": "upstream/board-n-pieces/0.4.0/internals.typ",
+    "bytes": 2508,
+    "sha256": "19fdd8440dd5799633ae480e116c62de5c8d244c824640bdc0c4f03fcef00e93"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/lib.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/lib.typ",
+    "fixture": "upstream/board-n-pieces/0.4.0/lib.typ",
+    "bytes": 10728,
+    "sha256": "77fdc47c1df4b54a3ad4aba8d7d2f24ae557281441c8e90a3e87c5f27c137f33"
+  },
+  {
+    "path": "@preview/board-n-pieces:0.4.0/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/board-n-pieces/0.4.0/typst.toml",
+    "fixture": "upstream/board-n-pieces/0.4.0/typst.toml",
+    "bytes": 508,
+    "sha256": "894c99d5f08be0a97bf966c3d183ae64808e1aadadf95b8879b6f96c602e8b3e"
+  },
+  {
+    "path": "@preview/springer-spaniel:0.1.0/src/package/codly.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/springer-spaniel/0.1.0/src/package/codly.typ",
+    "fixture": "upstream/springer-spaniel/0.1.0/src/package/codly.typ",
+    "bytes": 644,
+    "sha256": "8c7c42251551dbaae67dd20d30f93baee49d93f86c2e11c6abef67558506c0ab"
+  },
+  {
+    "path": "@preview/codly:0.2.0/codly.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/codly/0.2.0/codly.typ",
+    "fixture": "upstream/codly/0.2.0/codly.typ",
+    "bytes": 9738,
+    "sha256": "9d49c414eb0ad296d1d5a79abb66c10412b3b1fe6c4879958716df9f61fab50f"
+  },
+  {
+    "path": "@preview/codly:0.2.0/example/brand-python.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/codly/0.2.0/example/brand-python.svg",
+    "fixture": "upstream/codly/0.2.0/example/brand-python.svg",
+    "bytes": 593,
+    "sha256": "9307815e8f87379a7034ebbfa0df281225e678e8d4d5a7f6e1715515b584a901"
+  },
+  {
+    "path": "@preview/codly:0.2.0/example/brand-rust.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/codly/0.2.0/example/brand-rust.svg",
+    "fixture": "upstream/codly/0.2.0/example/brand-rust.svg",
+    "bytes": 1002,
+    "sha256": "cadb2adfe9d21b12ec50c3e6cb436cbca900f0c014d96f8a43b5001549b2a6e0"
+  },
+  {
+    "path": "@preview/codly:0.2.0/example/main.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/codly/0.2.0/example/main.typ",
+    "fixture": "upstream/codly/0.2.0/example/main.typ",
+    "bytes": 1532,
+    "sha256": "02dc41513361a05cdf6bad359deb2ea2267c655f54c0b38924c06af47078429c"
+  },
+  {
+    "path": "@preview/codly:0.2.0/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/codly/0.2.0/typst.toml",
+    "fixture": "upstream/codly/0.2.0/typst.toml",
+    "bytes": 323,
+    "sha256": "53dd85934cafb291c6a058fcb63d50bf851d70f621f502e063a65c0c234453df"
+  },
+  {
+    "path": "@preview/springer-spaniel:0.1.0/src/package/ctheorems.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/springer-spaniel/0.1.0/src/package/ctheorems.typ",
+    "fixture": "upstream/springer-spaniel/0.1.0/src/package/ctheorems.typ",
+    "bytes": 683,
+    "sha256": "4dfab5cdd77239b9618156358eee2f69b10b1db8c88dafdeb4d0050c5c5ad6d3"
+  },
+  {
+    "path": "@preview/ctheorems:1.1.2/lib.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/ctheorems/1.1.2/lib.typ",
+    "fixture": "upstream/ctheorems/1.1.2/lib.typ",
+    "bytes": 5995,
+    "sha256": "37b59ea874cf51235b39633c123981a252ba3a950d6df1dbb2f7112ec014d309"
+  },
+  {
+    "path": "@preview/ctheorems:1.1.2/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/ctheorems/1.1.2/typst.toml",
+    "fixture": "upstream/ctheorems/1.1.2/typst.toml",
+    "bytes": 361,
+    "sha256": "af5f2f7a33cd23d1b8fc02d5067c9751493cf234f497b083a8c5de712565548b"
+  },
+  {
+    "path": "@preview/springer-spaniel:0.1.0/src/package/dining-table.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/springer-spaniel/0.1.0/src/package/dining-table.typ",
+    "fixture": "upstream/springer-spaniel/0.1.0/src/package/dining-table.typ",
+    "bytes": 40,
+    "sha256": "4abc183590b5c6031f1ddf62d23186ae0efe8da31c35fbd15c9589cd2266a7ea"
+  },
+  {
+    "path": "@preview/dining-table:0.1.0/src/impl.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/dining-table/0.1.0/src/impl.typ",
+    "fixture": "upstream/dining-table/0.1.0/src/impl.typ",
+    "bytes": 5083,
+    "sha256": "f09034936eecfd3e54533dccec9fb39fac92b0e20e771a9bd7057000d975831e"
+  },
+  {
+    "path": "@preview/dining-table:0.1.0/src/lib.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/dining-table/0.1.0/src/lib.typ",
+    "fixture": "upstream/dining-table/0.1.0/src/lib.typ",
+    "bytes": 75,
+    "sha256": "ea60e7a41773298144352700a09d84be70cb1d35f02b48fb007aca06b6a29363"
+  },
+  {
+    "path": "@preview/dining-table:0.1.0/src/note.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/dining-table/0.1.0/src/note.typ",
+    "fixture": "upstream/dining-table/0.1.0/src/note.typ",
+    "bytes": 2473,
+    "sha256": "b36460698699708b838eba064eb468dcfdca4792f5e3a292f113d0cfabc4a6c0"
+  },
+  {
+    "path": "@preview/dining-table:0.1.0/src/styles.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/dining-table/0.1.0/src/styles.typ",
+    "fixture": "upstream/dining-table/0.1.0/src/styles.typ",
+    "bytes": 380,
+    "sha256": "01d5d97a52fb7264dcc3d60ac9a8033cd32735e8bd90e1ab6195b32ced2cf9b1"
+  },
+  {
+    "path": "@preview/dining-table:0.1.0/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/dining-table/0.1.0/typst.toml",
+    "fixture": "upstream/dining-table/0.1.0/typst.toml",
+    "bytes": 654,
+    "sha256": "d1668fe172c18707f08e539b7a258fc6f55276cad24dd03e69620d9759fd73e8"
+  },
+  {
+    "path": "@preview/springer-spaniel:0.1.0/src/package/drafting.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/springer-spaniel/0.1.0/src/package/drafting.typ",
+    "fixture": "upstream/springer-spaniel/0.1.0/src/package/drafting.typ",
+    "bytes": 36,
+    "sha256": "4db9435fbbbd86edd097fa90edc575e9afba54ce9cd425ada9ff7cf7c3e28c91"
+  },
+  {
+    "path": "@preview/drafting:0.2.0/drafting.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/drafting/0.2.0/drafting.typ",
+    "fixture": "upstream/drafting/0.2.0/drafting.typ",
+    "bytes": 15236,
+    "sha256": "309ee29d77cbc1189fa61fc89055c29277f32592a679c21775277fdcba8f6235"
+  },
+  {
+    "path": "@preview/drafting:0.2.0/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/drafting/0.2.0/typst.toml",
+    "fixture": "upstream/drafting/0.2.0/typst.toml",
+    "bytes": 465,
+    "sha256": "7b9b352dead99f07eb2536037ea6fdf73700953ff2dbcf9e9a6b26353d88b1e8"
+  },
+  {
+    "path": "@preview/springer-spaniel:0.1.0/src/package/gentle-clues.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/springer-spaniel/0.1.0/src/package/gentle-clues.typ",
+    "fixture": "upstream/springer-spaniel/0.1.0/src/package/gentle-clues.typ",
+    "bytes": 101,
+    "sha256": "30714240e3dd6ba2b6d599c37f54d095a0a75bfad2cf6061c74138224f3f3d07"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/abstract.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/abstract.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/abstract.svg",
+    "bytes": 1230,
+    "sha256": "b2a5995f696a2d81ba85b06e417a297bec22c0135b405c843208523730c54ea9"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/bell.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/bell.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/bell.svg",
+    "bytes": 467,
+    "sha256": "d0cd7a69978a05e632ae8dbf1d28819ca087cd060e4dff85ca359f440c2e7ca8"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/checkbox.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/checkbox.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/checkbox.svg",
+    "bytes": 516,
+    "sha256": "4957fe336a2b9d98ee372ea22fb5583bfe1bf66cb9329002dc568880ad9ccb68"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/code.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/code.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/code.svg",
+    "bytes": 482,
+    "sha256": "1bf26df2da4c7289ebf9f471c588f14296ed5017a8464b2b1682b59efb55c6da"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/conclusion.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/conclusion.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/conclusion.svg",
+    "bytes": 1725,
+    "sha256": "fe84ca2e21b2130842073dc682269f63e659f462517369e5661a773378833a39"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/crossmark.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/crossmark.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/crossmark.svg",
+    "bytes": 514,
+    "sha256": "5fdf68871703f74fb4d947bca2ebd189c91028b47e95fe1c1cd386c5557fed0d"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/danger.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/danger.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/danger.svg",
+    "bytes": 620,
+    "sha256": "9d6ba07c72f739a646835c096ab2125ca4fca68225f7bad80f2f2c12f8ef6936"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/excl.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/excl.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/excl.svg",
+    "bytes": 1093,
+    "sha256": "7585f0e7a348d2b2f4fe1cc62831d15db1ba6d36c46f2d3bb0ef3ca7aa5408d6"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/experiment.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/experiment.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/experiment.svg",
+    "bytes": 1939,
+    "sha256": "1f6e67b9d024c6b5418fda4ca5c209cc32cf7696c85d23f5178b74a365983a11"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/flag.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/flag.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/flag.svg",
+    "bytes": 1459,
+    "sha256": "569d02ae44e16a56bd188362148ad1174593fa9683baaccdf271c3ebb7ec6969"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/info.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/info.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/info.svg",
+    "bytes": 1550,
+    "sha256": "e5b841bb26504b7c485aeef06dbc5963078a617e6a0d1ae683bcbf642a46afb5"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/lightbulb.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/lightbulb.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/lightbulb.svg",
+    "bytes": 2435,
+    "sha256": "734c22bb5c78dff419df4f87a43d6774da557721a8619380736fb7ca1c83762d"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/questionmark.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/questionmark.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/questionmark.svg",
+    "bytes": 1823,
+    "sha256": "795021857352bcb3a7ba2086a9efaad5f4c47e34fe70d045775cdb236a1ceb66"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/quote.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/quote.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/quote.svg",
+    "bytes": 1376,
+    "sha256": "7daf61f36a06c0e1a5c6f3c5c631fdb38b46621727a62fc570ff468c6dd54d43"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/simple-graph.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/simple-graph.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/simple-graph.svg",
+    "bytes": 881,
+    "sha256": "f767d8836eaa7f764613c1aab86c90915931715571032e134423a9d68f392f1f"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/task.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/task.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/task.svg",
+    "bytes": 2257,
+    "sha256": "48b78bc843dad9cb9f11c5d7cfed116fe53a09956b87965354e893a629cadb20"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/tip.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/tip.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/tip.svg",
+    "bytes": 3866,
+    "sha256": "39de3ca9d3fc9493f0f8891c01429f533599b9e5765c2f7dc100779360717948"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/assets/warning.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/assets/warning.svg",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/assets/warning.svg",
+    "bytes": 823,
+    "sha256": "23c1a5bce924a379498caffe0b62d0ea54ec17a7a0cc2d4acf1bbdd3ed412f9e"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/clues.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/clues.typ",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/clues.typ",
+    "bytes": 5539,
+    "sha256": "9b2312783840149f4ad49d5c67b19c2fc24d4e2a303567a37af8bf25051ba495"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/lang.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/lang.toml",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/lang.toml",
+    "bytes": 1671,
+    "sha256": "435f00bdc0c764dab5b5e544263cf763b6d958c1c99fac64afadbe276650b498"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/lib.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/lib.typ",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/lib.typ",
+    "bytes": 50,
+    "sha256": "abaa659a0eb0f773d5c82447da52786edf787bd64db3f13c31ac770e1869da10"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/predefined.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/predefined.typ",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/predefined.typ",
+    "bytes": 2458,
+    "sha256": "7df1a082cb58ac6eed0b1afca00b7a403d21f3a52106d44a06d85a9c3b36d6bd"
+  },
+  {
+    "path": "@preview/linguify:0.4.0/lib/fluent.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/linguify/0.4.0/lib/fluent.typ",
+    "fixture": "upstream/linguify/0.4.0/lib/fluent.typ",
+    "bytes": 1780,
+    "sha256": "2eb2ffd643bcdf1328ab24c22a7977aeb650e24b59a2b28a7b399d66d56f6aa9"
+  },
+  {
+    "path": "@preview/linguify:0.4.0/lib/lib.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/linguify/0.4.0/lib/lib.typ",
+    "fixture": "upstream/linguify/0.4.0/lib/lib.typ",
+    "bytes": 133,
+    "sha256": "d83fb1f2ebfb4e74ac62214701ebdcb9a53dec0aad6efbdfa79ba05e0c3d5555"
+  },
+  {
+    "path": "@preview/linguify:0.4.0/lib/linguify.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/linguify/0.4.0/lib/linguify.typ",
+    "fixture": "upstream/linguify/0.4.0/lib/linguify.typ",
+    "bytes": 5126,
+    "sha256": "e2af0fa5cd8b7a70d22dbb8ff3f80c4c8657321b548571971c051a6296af8bb3"
+  },
+  {
+    "path": "@preview/linguify:0.4.0/lib/utils.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/linguify/0.4.0/lib/utils.typ",
+    "fixture": "upstream/linguify/0.4.0/lib/utils.typ",
+    "bytes": 408,
+    "sha256": "a6ac01aeba06bf28bf2ef1a0b2e2e2d3ab6ab7dee5782a552c778b34d6b6e44d"
+  },
+  {
+    "path": "@preview/linguify:0.4.0/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/linguify/0.4.0/typst.toml",
+    "fixture": "upstream/linguify/0.4.0/typst.toml",
+    "bytes": 426,
+    "sha256": "ef9a7991145909eb38d941bc6f3de97dd1cf93aa9bc7ae06a6b3e333d787c6e4"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/lib/theme.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/lib/theme.typ",
+    "fixture": "upstream/gentle-clues/0.9.0/lib/theme.typ",
+    "bytes": 1444,
+    "sha256": "22a5bdda120186da10b42328cc03555642e88d9700284522a517e90f5e7b1b1b"
+  },
+  {
+    "path": "@preview/gentle-clues:0.9.0/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/gentle-clues/0.9.0/typst.toml",
+    "fixture": "upstream/gentle-clues/0.9.0/typst.toml",
+    "bytes": 479,
+    "sha256": "42a8b7ecf198f2f2224a83f5c313941df85f069a86a21e418156070c3f27319e"
+  },
+  {
+    "path": "@preview/physica:0.9.3/LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/physica/0.9.3/LICENSE.txt",
+    "fixture": "upstream/physica/0.9.3/LICENSE.txt",
+    "bytes": 1055,
+    "sha256": "15a018572ca2eb9a4ca6260127f18c21fb1f7d072f950177284ee53411b494cb"
+  },
+  {
+    "path": "@preview/physica:0.9.3/physica.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/physica/0.9.3/physica.typ",
+    "fixture": "upstream/physica/0.9.3/physica.typ",
+    "bytes": 29440,
+    "sha256": "3a716873861bc871afcd6d593aae8845437359bef5039c616a23a69975b1ed07"
+  },
+  {
+    "path": "@preview/physica:0.9.3/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/physica/0.9.3/typst.toml",
+    "fixture": "upstream/physica/0.9.3/typst.toml",
+    "bytes": 1074,
+    "sha256": "37143ff066d06d4c4b6b6f3dbaa9d96897eb54cd20c085fda8d4f688cb205d59"
+  },
+  {
+    "path": "@preview/springer-spaniel:0.1.0/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/springer-spaniel/0.1.0/typst.toml",
+    "fixture": "upstream/springer-spaniel/0.1.0/typst.toml",
+    "bytes": 670,
+    "sha256": "6489b5dd846c56926774ebadc7377cfa7ca072549d8e8bda5e91f9f4017475db"
+  },
+  {
+    "path": "@preview/elsearticle:3.1.0/src/els-environment.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/elsearticle/3.1.0/src/els-environment.typ",
+    "fixture": "upstream/elsearticle/3.1.0/src/els-environment.typ",
+    "bytes": 704,
+    "sha256": "627ec90a9a68710b6db80cc63c8c01598a4c6b647827ea84bd1d96e0008710d3"
+  },
+  {
+    "path": "@preview/elsearticle:3.1.0/src/els-globals.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/elsearticle/3.1.0/src/els-globals.typ",
+    "fixture": "upstream/elsearticle/3.1.0/src/els-globals.typ",
+    "bytes": 1442,
+    "sha256": "24be68ae3c7637b9b8bb861190d8d20f613ecd2b98871395128f685dc3641f58"
+  },
+  {
+    "path": "@preview/elsearticle:3.1.0/src/els-paper.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/elsearticle/3.1.0/src/els-paper.typ",
+    "fixture": "upstream/elsearticle/3.1.0/src/els-paper.typ",
+    "bytes": 688,
+    "sha256": "f717603ec257afaf6f3072fcb6d5f73f236258864196986bc52076ad85006153"
+  },
+  {
+    "path": "@preview/elsearticle:3.1.0/src/els-template-info.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/elsearticle/3.1.0/src/els-template-info.typ",
+    "fixture": "upstream/elsearticle/3.1.0/src/els-template-info.typ",
+    "bytes": 3465,
+    "sha256": "58c143351804442f624db7dd3c0d7a7f64a5c577f7283e74c4eedf4206725717"
+  },
+  {
+    "path": "@preview/elsearticle:3.1.0/src/els-utils.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/elsearticle/3.1.0/src/els-utils.typ",
+    "fixture": "upstream/elsearticle/3.1.0/src/els-utils.typ",
+    "bytes": 509,
+    "sha256": "e270f3e1e812db997bb606010a6908c0ab8d1e8b85b6305352f8f525630aea16"
+  },
+  {
+    "path": "@preview/subpar:0.2.2/assets/i18n.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/subpar/0.2.2/assets/i18n.toml",
+    "fixture": "upstream/subpar/0.2.2/assets/i18n.toml",
+    "bytes": 2179,
+    "sha256": "0bc009355d39880748716309f771724ea2fccfd30a0f4eee84b239a7e2f8ffd7"
+  },
+  {
+    "path": "@preview/subpar:0.2.2/src/default.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/subpar/0.2.2/src/default.typ",
+    "fixture": "upstream/subpar/0.2.2/src/default.typ",
+    "bytes": 946,
+    "sha256": "0d2d4867206094e60251306dc6adc00c498a7cbacadcbaf4bacde1bb1c92d461"
+  },
+  {
+    "path": "@preview/subpar:0.2.2/src/lib.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/subpar/0.2.2/src/lib.typ",
+    "fixture": "upstream/subpar/0.2.2/src/lib.typ",
+    "bytes": 11624,
+    "sha256": "3aab0d4446e1ef62a2d67b2e97838891ba0c499c817e57a10500319dbec153e3"
+  },
+  {
+    "path": "@preview/subpar:0.2.2/src/util.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/subpar/0.2.2/src/util.typ",
+    "fixture": "upstream/subpar/0.2.2/src/util.typ",
+    "bytes": 4047,
+    "sha256": "90780c0efca6d57d3fb03f5637f67a38ca760f7d9563162a5c43b850b889fffa"
+  },
+  {
+    "path": "@preview/subpar:0.2.2/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/subpar/0.2.2/typst.toml",
+    "fixture": "upstream/subpar/0.2.2/typst.toml",
+    "bytes": 308,
+    "sha256": "315511ac0aeb55ea1cedebbad72b31985ad59a2b0d11123689864d0f61cfe2cb"
+  },
+  {
+    "path": "@preview/elsearticle:3.1.0/src/elsearticle.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/elsearticle/3.1.0/src/elsearticle.typ",
+    "fixture": "upstream/elsearticle/3.1.0/src/elsearticle.typ",
+    "bytes": 5665,
+    "sha256": "1a501c666f37bb7ea8508f8d12e361b169886325585f0069b8ac86f99481c00d"
+  },
+  {
+    "path": "@preview/equate:0.3.2/assets/example-1.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/equate/0.3.2/assets/example-1.svg",
+    "fixture": "upstream/equate/0.3.2/assets/example-1.svg",
+    "bytes": 74593,
+    "sha256": "908c5570000bae8909aeec07f4d09f443c2929d8b6f63ff3751ad5b6268b741c"
+  },
+  {
+    "path": "@preview/equate:0.3.2/assets/example-2.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/equate/0.3.2/assets/example-2.svg",
+    "fixture": "upstream/equate/0.3.2/assets/example-2.svg",
+    "bytes": 69265,
+    "sha256": "0f97953127bfe718a952a3a12a9c9fa5dc77ebc90d20c0b5f27cc951b5adce92"
+  },
+  {
+    "path": "@preview/equate:0.3.2/assets/example.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/equate/0.3.2/assets/example.typ",
+    "fixture": "upstream/equate/0.3.2/assets/example.typ",
+    "bytes": 748,
+    "sha256": "7ba711c460f57010f4ac39015bbace7a0072ee18e0f48ff41c24c41c2bdfbb70"
+  },
+  {
+    "path": "@preview/equate:0.3.2/src/equate.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/equate/0.3.2/src/equate.typ",
+    "fixture": "upstream/equate/0.3.2/src/equate.typ",
+    "bytes": 23015,
+    "sha256": "ac03ab401c9c057bb76c6f49e764126760c47ac63eff9179af6f62735b960676"
+  },
+  {
+    "path": "@preview/equate:0.3.2/src/lib.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/equate/0.3.2/src/lib.typ",
+    "fixture": "upstream/equate/0.3.2/src/lib.typ",
+    "bytes": 42,
+    "sha256": "3eaf0866184d42d8bb951f048c73e190cba5208cc1abce63b072d2ac3289a6c6"
+  },
+  {
+    "path": "@preview/equate:0.3.2/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/equate/0.3.2/typst.toml",
+    "fixture": "upstream/equate/0.3.2/typst.toml",
+    "bytes": 481,
+    "sha256": "92f97a7307b415bfc78471e8b568bfa2d5789e34f8166da97e230de4102b7dba"
+  },
+  {
+    "path": "@preview/elsearticle:3.1.0/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/elsearticle/3.1.0/typst.toml",
+    "fixture": "upstream/elsearticle/3.1.0/typst.toml",
+    "bytes": 365,
+    "sha256": "ceabbd795fcdd5d8dfab6a206327a3873af329721b20313542cd26ddcb8bef92"
+  },
+  {
+    "path": "@preview/clean-math-paper:0.2.8/lib.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/clean-math-paper/0.2.8/lib.typ",
+    "fixture": "upstream/clean-math-paper/0.2.8/lib.typ",
+    "bytes": 11191,
+    "sha256": "2c9d472fedec5b40f93d4c3ca05149c53fb5f357a71d4936378e17e6e3dc1119"
+  },
+  {
+    "path": "@preview/great-theorems:0.1.2/example.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/great-theorems/0.1.2/example.typ",
+    "fixture": "upstream/great-theorems/0.1.2/example.typ",
+    "bytes": 1037,
+    "sha256": "731a77354197d409f94f2406a27da9a09c67f8fa27f8203a0c1702802195074b"
+  },
+  {
+    "path": "@preview/rich-counters:0.2.1/example.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/rich-counters/0.2.1/example.typ",
+    "fixture": "upstream/rich-counters/0.2.1/example.typ",
+    "bytes": 1020,
+    "sha256": "f34810a09d2e21c709ef4881e848c7ea288b7ee4cc4b5b7bb4fe52dd338c7802"
+  },
+  {
+    "path": "@preview/rich-counters:0.2.1/lib.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/rich-counters/0.2.1/lib.typ",
+    "fixture": "upstream/rich-counters/0.2.1/lib.typ",
+    "bytes": 4040,
+    "sha256": "d72d08d2ec4e74b88846e12225f2048f109c01acdbf64f8da72f873416501dd2"
+  },
+  {
+    "path": "@preview/rich-counters:0.2.1/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/rich-counters/0.2.1/typst.toml",
+    "fixture": "upstream/rich-counters/0.2.1/typst.toml",
+    "bytes": 391,
+    "sha256": "f3c1444370890f4c8f88eed377180bd386891f9a72c6b308f6575be7a470af57"
+  },
+  {
+    "path": "@preview/great-theorems:0.1.2/lib.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/great-theorems/0.1.2/lib.typ",
+    "fixture": "upstream/great-theorems/0.1.2/lib.typ",
+    "bytes": 5288,
+    "sha256": "5d0f70cd4dfb7bf4b7ff60e6e433815eac89f24276b3d3580e84d3c7d779104f"
+  },
+  {
+    "path": "@preview/great-theorems:0.1.2/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/great-theorems/0.1.2/typst.toml",
+    "fixture": "upstream/great-theorems/0.1.2/typst.toml",
+    "bytes": 523,
+    "sha256": "24e1dab7823b61ec59a88e04048f62d32aae7c515c0feac74e14e24ca5eb605d"
+  },
+  {
+    "path": "@preview/rich-counters:0.2.2/example.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/rich-counters/0.2.2/example.typ",
+    "fixture": "upstream/rich-counters/0.2.2/example.typ",
+    "bytes": 1020,
+    "sha256": "665fc55c4128972fdc88749cf05aba5392eae6cb698656bf8cf36a67e2b5c1b7"
+  },
+  {
+    "path": "@preview/rich-counters:0.2.2/lib.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/rich-counters/0.2.2/lib.typ",
+    "fixture": "upstream/rich-counters/0.2.2/lib.typ",
+    "bytes": 4056,
+    "sha256": "d3c7c6a111b401562fc417ea6fac7a7e3c325c4671e7e8cbeefefc2a1e149879"
+  },
+  {
+    "path": "@preview/rich-counters:0.2.2/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/rich-counters/0.2.2/typst.toml",
+    "fixture": "upstream/rich-counters/0.2.2/typst.toml",
+    "bytes": 391,
+    "sha256": "48d1d492f4ca8cde7d2954c42da9c3c8db2210c1b46eca1de2d893170d8acde2"
+  },
+  {
+    "path": "@preview/i-figured:0.2.4/examples/basic.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/i-figured/0.2.4/examples/basic.typ",
+    "fixture": "upstream/i-figured/0.2.4/examples/basic.typ",
+    "bytes": 1964,
+    "sha256": "de991b8ff86e5817fa1c9060f2d054463c989f99245eb3a73f851e32c4f11887"
+  },
+  {
+    "path": "@preview/i-figured:0.2.4/examples/level-two.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/i-figured/0.2.4/examples/level-two.typ",
+    "fixture": "upstream/i-figured/0.2.4/examples/level-two.typ",
+    "bytes": 1079,
+    "sha256": "dbc88367294b5970abe32b70b083286612f510dd3508e4f3419385b08ff2053a"
+  },
+  {
+    "path": "@preview/i-figured:0.2.4/i-figured.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/i-figured/0.2.4/i-figured.typ",
+    "fixture": "upstream/i-figured/0.2.4/i-figured.typ",
+    "bytes": 2815,
+    "sha256": "2f5cbd54668e1a9bfcdf024975d97de7e573de574ca34f2d0f1c77c006cf4b29"
+  },
+  {
+    "path": "@preview/i-figured:0.2.4/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/i-figured/0.2.4/typst.toml",
+    "fixture": "upstream/i-figured/0.2.4/typst.toml",
+    "bytes": 320,
+    "sha256": "18d3b1cf50f7c783b9e6b026eae06ee905bbae3be77e84caec3c1068d16a807b"
+  },
+  {
+    "path": "@preview/clean-math-paper:0.2.8/orcid.svg",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/clean-math-paper/0.2.8/orcid.svg",
+    "fixture": "upstream/clean-math-paper/0.2.8/orcid.svg",
+    "bytes": 2016,
+    "sha256": "195be086656233fc1a0089086d9190d28dc6abce39c2290612d1893233e1f166"
+  },
+  {
+    "path": "@preview/clean-math-paper:0.2.8/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/clean-math-paper/0.2.8/typst.toml",
+    "fixture": "upstream/clean-math-paper/0.2.8/typst.toml",
+    "bytes": 592,
+    "sha256": "c9d62b9873dd825c1f5464765a52715782f0824906389a05a296a59b0b18abfa"
+  },
+  {
+    "path": "fonts/NotoSans.ttf",
+    "url": "https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosans/NotoSans%5Bwdth,wght%5D.ttf",
+    "fixture": "noto-sans/NotoSans.ttf",
+    "bytes": 2049096,
+    "sha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d"
+  }
+]

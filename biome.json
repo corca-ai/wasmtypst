@@ -1,9 +1,25 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.3/schema.json",
-  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
-  "files": {
-    "includes": ["js/**", "scripts/**", "tests/*.mjs", "web/**", "*.json"]
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
   },
-  "formatter": { "indentStyle": "space", "indentWidth": 2 },
-  "linter": { "enabled": false }
+  "files": {
+    "includes": [
+      "js/**",
+      "scripts/**",
+      "tests/*.mjs",
+      "web/**",
+      "*.json",
+      "tests/fixtures/corpus/*.mjs"
+    ]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "linter": {
+    "enabled": false
+  }
 }

@@ -206,6 +206,7 @@ impl MemoryWorld {
         };
         add(b"wasmtypst/0.2.0;typst/0.15.1;merkle-sha256-v1");
         add(include_bytes!("../Cargo.lock"));
+        add(&crate::WASM_MEMORY_LIMIT_BYTES.to_le_bytes());
         add(path_for(self.main).as_bytes());
         add(&self.config_identity);
         let mut files: Vec<_> = self

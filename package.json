@@ -55,7 +55,11 @@
       "types": "./dist/syntax.d.ts",
       "import": "./dist/syntax.js"
     },
-    "./syntax-wasm": "./dist/syntax/wasmtypst_syntax_bg.wasm"
+    "./syntax-wasm": "./dist/syntax/wasmtypst_syntax_bg.wasm",
+    "./resources": {
+      "types": "./dist/resources.d.ts",
+      "import": "./dist/resources.js"
+    }
   },
   "scripts": {
     "build": "bun run scripts/build.mjs",
@@ -63,10 +67,15 @@
     "test": "cargo test --locked --workspace && bun run node tests/sdk.mjs && bun run node tests/production.mjs && bun run node tests/syntax.mjs",
     "test:browser": "bun run node tests/browser.mjs",
     "test:package": "bun run node tests/package.mjs",
-    "check": "bun run format:check && cargo fmt --check && cargo clippy --locked --workspace --all-targets -- -D warnings && bun run typecheck && bun run test && bun run test:browser && bun run test:package",
+    "check": "bun run format:check && cargo fmt --check && cargo clippy --locked --workspace --all-targets -- -D warnings && bun run typecheck && bun run test && bun run test:browser && bun run test:package && bun run test:resources && bun run test:corpus",
     "serve": "bun run node scripts/serve.mjs",
     "format:check": "biome format .",
-    "benchmark": "bun run node scripts/benchmark.mjs"
+    "benchmark": "bun run node scripts/benchmark.mjs",
+    "test:resources": "bun run node tests/resources.mjs",
+    "test:corpus": "bun run node tests/corpus.mjs",
+    "test:corpus:native": "bun run node tests/native-corpus.mjs",
+    "build:memory-profiles": "bun run node scripts/build-memory-profiles.mjs",
+    "benchmark:memory": "bun run node scripts/benchmark-memory.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.3",

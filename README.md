@@ -22,6 +22,7 @@ optional; the integrating application owns source, collaboration and history.
 | `wasmtypst/wasm` | Released WASM asset |
 | `wasmtypst/syntax` | Small synchronous official parser after async initialization |
 | `wasmtypst/syntax-wasm` | Syntax-only WASM asset |
+| `wasmtypst/resources` | Optional host-side integrity-locked resource delivery |
 
 ```ts
 import { createCompiler } from 'wasmtypst';
@@ -219,3 +220,116 @@ locations and native MathML from the same compiled document and revision.
 No second equation compiler guesses source context. The default leaves `math`
 empty and avoids fragment extraction. Fragment HTML remains untrusted; isolate
 it or sanitize with a restrictive MathML policy before placing it in a host DOM.
+
+## Locked package and font delivery
+
+`wasmtypst/resources` is an optional **host-side** adapter. Give it an explicitly
+approved inventory of exact file URLs, SHA-256 digests and decoded byte lengths:
+
+```ts
+import { createResourceLoader } from 'wasmtypst/resources';
+const resources = createResourceLoader({
+  resources: approvedLock.resources,
+  cache: authorizedCache, // optional host-owned get/put; receives AbortSignal
+});
+const compiler = await createCompiler({ resolveFile: resources.resolveFile });
+const font = await resources.resolveFile('fonts/Project-Regular.otf');
+if (font) await compiler.addFont(font);
+```
+
+List each package's `typst.toml`, entrypoint, transitive imports and plugin bytes
+under its exact `@namespace/name:version/path`; archives are not extracted by
+this adapter. Font resources are explicit too; it never queries system fonts.
+Lock files and URLs are trusted application configuration, not document input.
+Approve the package version, distribution license and complete file inventory
+before creating a lock. The loader does not discover or approve dependencies.
+
+Unknown paths return null without I/O. Downloads use HTTPS without credentials,
+referrers or redirects, a 15-second default deadline and a bounded streaming
+read (16 MiB default per resource, configurable up to 64 MiB). Sizes describe
+**decoded** bytes. Both downloaded and cached bytes must match the lock's size
+and SHA-256 before use. Cache contents and returned buffers are isolated.
+Cache implementations own persistence, eviction, authorization and cancellation;
+cache errors and corruption are reported rather than silently ignored.
+`offline: true` permits only verified cache hits and makes no network requests.
+No network, persistence or cache is added to the compiler engine or core import.
+
+## Representative document qualification
+
+`bun run test:corpus` verifies 18 contracts in Node, Chromium, Firefox and
+WebKit, plus a narrow-viewport Chromium host with 4x page CPU throttling:
+
+- 13 supported documents: the original five cases, mathematical proofs and
+  matrices, CSV/JSON reporting, multilingual CRLF source, page/column/grid layout,
+  upstream Elsevier and mathematical-paper examples, and explicitly API-adapted
+  finite-volume tutorial variants with full-resolution and downsampled figures.
+- Two original upstream examples with known old-API incompatibilities,
+  reproduced with the official native Typst 0.15.1 CLI.
+- Three intentional refusals (malformed source, unapproved package, invalid
+  bibliography), each followed by a valid document in the same Worker.
+
+A passing gate means these support/refusal/limitation contracts match; it does
+not mean all 18 documents export successfully. Source commits, exact bytes,
+SHA-256 identities, licenses and derived-image provenance are retained under
+`tests/fixtures/`. Dependencies are preloaded into a verified offline cache.
+The external documents are upstream examples, not a corpus of private user
+projects. See `tests/fixtures/README.md` for attribution and adaptation details.
+
+Supported documents must export byte-identical PDFs across runtimes, preserve
+expected PDF text through the independent Poppler reader, rasterize their
+first/last pages, and pass SVG, HTML content, incremental-edit and stale-output
+checks. Layout-specific HTML omissions are explicit contracts with diagnostics;
+PDF success does not establish equivalent HTML layout or complete HTML content.
+Elsevier's original example deliberately retains its fallback-font warnings.
+
+The raw `report/corpus.json` records status, project group, engine identity,
+browser versions, per-document initialization/first/warm times, diagnostics and
+WASM memory. PDFs, text, HTML and page PNGs live in `report/corpus/`.
+`TYPST_NATIVE_BIN=/path/to/typst bun run test:corpus:native` records the separate
+native comparison in `report/native-corpus.json`. These artifacts are ignored
+locally and uploaded by CI.
+
+`CORPUS_SAMPLES=25 bun run test:corpus` collects more editing samples. The
+original five cases reuse one World; extended documents each own a project
+Worker and reuse it for their edits, disposing it on project close. Small-document
+project groups retain the 96 MiB WASM linear-memory budget; the full-resolution
+tutorial has an explicit 384 MiB regression budget. Neither budget bounds total
+browser memory. Page CPU throttling does not certify Worker CPU throttling or
+physical mobile devices. Times are observations, not portable guarantees.
+
+## Compiler memory profiles
+
+The default compiler build permits up to **512 MiB of WASM linear memory**.
+This is a growth ceiling, not an initial allocation or a total-process limit.
+JavaScript buffers, Worker/compiled-code overhead and the surrounding application
+use additional memory. The syntax-only parser keeps its independent 256 MiB
+ceiling. Project-file/font admission limits remain separate and unchanged.
+
+`build.rs` accepts `WASMTYPST_MEMORY_LIMIT_MIB=256`, `512` or `1024`, using the
+same value for the linker and compiled metadata. For example:
+
+```sh
+WASMTYPST_MEMORY_LIMIT_MIB=1024 bun run build
+```
+
+The build verifies the actual memory boundary. `compiler.stats()` reads the
+compiled value instead of reporting a hardcoded default. Profiles are chosen
+at build time; a running instance cannot raise its compiled maximum. Hosts can
+supply a different same-revision build through the existing `wasm` option in a
+fresh Worker. Output fingerprints include the memory profile.
+
+For a repeatable 256/512/1024 MiB comparison, first build the default SDK, then
+run `bun run build:memory-profiles` and `bun run benchmark:memory`. The builder
+preserves/restores the complete default SDK. The benchmark uses three fresh
+Node processes per profile and the actual three browser engines, with original
+full-resolution tutorial figures and five edits including PDF export. It
+verifies real memory growth boundaries and identical PDF bytes across successful
+profiles. Raw results live in `report/memory-profiles.json` and CI artifacts.
+
+In the local qualification, 256 MiB refused PDF export while 512 MiB and 1 GiB
+both completed PDF/SVG/HTML and repeated exports, using about 350.8 MiB of WASM
+linear memory. Whole Node process peak RSS was about 782–791 MiB across the
+larger profiles, including custom WASM loading buffers, code and Worker overhead.
+This is not a browser-process measurement or a low-memory-device guarantee.
+The 256 MiB failure remains in the comparison matrix; it is no longer a failure
+of the default compiler on this fixture.
