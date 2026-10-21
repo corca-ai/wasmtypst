@@ -167,3 +167,28 @@ those ranges against the compile revision. A source edit invalidates the
 cached HTML and math together. HTML with and without math use distinct cache
 options; the host must match a fragment to its captured source before paint.
 Raw MathML fragments are not trusted DOM and convey no edit authority.
+
+## Host-authorized resource locks
+
+The optional `wasmtypst/resources` entry owns delivery outside the compiler
+worker. It freezes a host-approved path/HTTPS URL/decoded-size/SHA-256 inventory,
+refuses unknown paths without I/O, bounds streamed decoded bytes, verifies both
+network and cache results, and forwards cancellation with a per-file deadline.
+Downloads omit credentials and referrers and refuse redirects. Its optional
+content-addressed cache is supplied by the host; offline mode never downloads.
+Returned and cache-owned buffers are distinct. Cache failures are visible.
+The adapter does not extract archives, discover transitive dependencies, approve
+registry contents, select fallback fonts or persist anything by itself. Hosts
+must not admit lock configuration from untrusted document source.
+
+The corpus gate uses an explicitly preloaded offline lock, including real
+package manifests/plugins and project fonts, in Node and all three browser
+engines. It supplements focused engine tests; it is not a universal compatibility
+claim. `report/corpus.json` retains per-target diagnostics and observed memory
+and timing. The long fixture is generated academic content; CJK glyph coverage
+is deliberately limited to the redistributable subset's fixture text.
+
+The corpus additionally compares PDF SHA-256 across runtimes and enforces a
+96 MiB linear-memory high-water budget for these five workloads. A narrow
+Chromium viewport with 4x page CPU throttling is an additional host scenario;
+it is not a measurement of throttled Worker CPU or a physical mobile device.

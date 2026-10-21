@@ -115,3 +115,48 @@ The packed consumer imports the actual syntax module and its public declarations
 All three browser engines run the real syntax grammar. Compiler tests check
 opt-in MathML fragments against their actual equation source ranges and cache
 invalidation; hosts still own sanitization, source admission and editing.
+
+## Representative corpus and locked resource delivery
+
+The 2026-10-21 follow-up adds an optional host-side `wasmtypst/resources`
+adapter and a repeatable corpus gate, without adding network access or fonts to
+the engine. The loader tests cover exact-path admission, HTTPS/credential/redirect
+policy, frozen lock configuration, streamed size bounds, SHA-256 verification,
+cache corruption, buffer isolation, offline refusal, deadlines and cancellation
+before and during response consumption. An additional local real-HTTPS probe
+fetched the pinned charged-ieee manifest and source through the default fetch
+implementation and verified their exact locked sizes and digests. CI remains
+offline for corpus dependencies and does not depend on third-party availability.
+
+`CORPUS_SAMPLES=25 bun run test:corpus` passed all five fixtures in Node 24.18.0,
+Chromium, Firefox and WebKit. The same fixtures also passed a narrow-viewport
+Chromium host with 4x page CPU throttling. Page throttling does not certify
+compiler Worker CPU throttling or a physical resource-constrained device.
+Every runtime produced byte-identical PDFs for each fixture. Paginated output
+had no missing-font/glyph warnings; the real IEEE template produced two pages,
+and the synthetic long document produced 24 pages.
+
+All five fixtures compiled as HTML too. This is not visual equivalence to PDF:
+charged-ieee emits native warnings that its page rules and placement are ignored
+in HTML. Those diagnostics are retained in the raw report. The CJK font subset
+only proves the characters in the fixture. The corpus does not yet span many
+publication templates or certify arbitrary CJK documents.
+
+| Runtime | 24-page warm compile p95 (25 edits) |
+| --- | ---: |
+| Node | 2.11 ms |
+| Chromium | 1.88 ms |
+| Firefox | 10.10 ms |
+| WebKit | 2.32 ms |
+
+These are local desktop compile timings, excluding image decode, paint and
+PDF export. Each runtime reuses one compiler across the fixed corpus order;
+initial setup and first compilation are recorded separately. Peak observed
+WASM linear memory after the 25-edit corpus was approximately 50.6 MiB in all
+runtimes. The gate enforces a 96 MiB corpus high-water budget, distinct from
+the runtime's 256 MiB maximum. Neither figure bounds browser process memory.
+Raw build provenance, per-case samples, diagnostics and memory live in ignored
+`report/corpus.json` (the local 25-sample record is also retained as
+`report/corpus-25-samples.json`); CI uploads its own record with qualification
+artifacts. No compiler speedup, smaller runtime or physical-mobile qualification
+is claimed by this change.

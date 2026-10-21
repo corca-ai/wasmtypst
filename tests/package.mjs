@@ -32,6 +32,8 @@ try {
   );
   const text = `import assert from 'node:assert/strict';
 import { createCompiler } from 'wasmtypst/node';
+import { createResourceLoader } from 'wasmtypst/resources';
+assert.equal(await createResourceLoader({resources:[]}).resolveFile('unapproved'), null);
 import { instantiate } from 'wasmtypst/core';
 import { HtmlPreview } from 'wasmtypst/html-preview';
 import { createSyntaxParser } from 'wasmtypst/syntax';
@@ -56,6 +58,9 @@ try{const r=await compiler.compile();assert.equal(r.success,true);assert.ok((awa
     `import {createCompiler, type CompileResult} from 'wasmtypst';
 import {createCompiler as nodeCompiler} from 'wasmtypst/node';
 import {instantiate} from 'wasmtypst/core';
+import {createResourceLoader, type LockedResource} from 'wasmtypst/resources';
+const resources: LockedResource[] = [];
+void createResourceLoader({resources});
 import {HtmlPreview} from 'wasmtypst/html-preview';
 import {createSyntaxParser, type SyntaxNode} from 'wasmtypst/syntax';
 const tree: SyntaxNode = (await createSyntaxParser()).parse('= Typed');

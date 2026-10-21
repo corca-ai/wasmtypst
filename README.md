@@ -22,6 +22,7 @@ optional; the integrating application owns source, collaboration and history.
 | `wasmtypst/wasm` | Released WASM asset |
 | `wasmtypst/syntax` | Small synchronous official parser after async initialization |
 | `wasmtypst/syntax-wasm` | Syntax-only WASM asset |
+| `wasmtypst/resources` | Optional host-side integrity-locked resource delivery |
 
 ```ts
 import { createCompiler } from 'wasmtypst';
@@ -219,3 +220,58 @@ locations and native MathML from the same compiled document and revision.
 No second equation compiler guesses source context. The default leaves `math`
 empty and avoids fragment extraction. Fragment HTML remains untrusted; isolate
 it or sanitize with a restrictive MathML policy before placing it in a host DOM.
+
+## Locked package and font delivery
+
+`wasmtypst/resources` is an optional **host-side** adapter. Give it an explicitly
+approved inventory of exact file URLs, SHA-256 digests and decoded byte lengths:
+
+```ts
+import { createResourceLoader } from 'wasmtypst/resources';
+const resources = createResourceLoader({
+  resources: approvedLock.resources,
+  cache: authorizedCache, // optional host-owned get/put; receives AbortSignal
+});
+const compiler = await createCompiler({ resolveFile: resources.resolveFile });
+const font = await resources.resolveFile('fonts/Project-Regular.otf');
+if (font) await compiler.addFont(font);
+```
+
+List each package's `typst.toml`, entrypoint, transitive imports and plugin bytes
+under its exact `@namespace/name:version/path`; archives are not extracted by
+this adapter. Font resources are explicit too; it never queries system fonts.
+Lock files and URLs are trusted application configuration, not document input.
+Approve the package version, distribution license and complete file inventory
+before creating a lock. The loader does not discover or approve dependencies.
+
+Unknown paths return null without I/O. Downloads use HTTPS without credentials,
+referrers or redirects, a 15-second default deadline and a bounded streaming
+read (16 MiB default per resource, configurable up to 64 MiB). Sizes describe
+**decoded** bytes. Both downloaded and cached bytes must match the lock's size
+and SHA-256 before use. Cache contents and returned buffers are isolated.
+Cache implementations own persistence, eviction, authorization and cancellation;
+cache errors and corruption are reported rather than silently ignored.
+`offline: true` permits only verified cache hits and makes no network requests.
+No network, persistence or cache is added to the compiler engine or core import.
+
+## Representative document qualification
+
+`bun run test:corpus` runs the same five documents in Node, Chromium, Firefox
+and WebKit: a multi-file research article with bibliography and SVG, the
+unmodified charged-ieee 0.1.4 template, Korean/Japanese/Chinese text using a
+project font, cmarker 0.1.8 with its real WASM plugin, and a synthetic 24-chapter
+research document. Locked dependencies are preloaded into an offline cache.
+It checks page counts, byte-identical PDF output across runtimes, real PDF/SVG
+export, semantic HTML,
+incremental edits, stale-output refusal and missing-font/glyph diagnostics.
+Provenance and font licenses live in `tests/fixtures/README.md`.
+
+The raw `report/corpus.json` records engine/build identity, browser versions,
+initialization time, per-document first/warm compile times, diagnostics and WASM
+linear-memory high water marks. `CORPUS_SAMPLES=25 bun run test:corpus` collects
+more editing samples. A fourth browser pass uses a narrow mobile viewport and
+4x **page** CPU throttling; this does not establish throttling of the compiler
+Worker or the behavior of a physical mobile device. The corpus enforces a 96 MiB
+WASM linear-memory budget, separately from the engine's 256 MiB maximum.
+Times are observations, not portable latency guarantees.
+These desktop browsers do not certify mobile devices or arbitrary templates.

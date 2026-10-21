@@ -1,0 +1,79 @@
+[
+  {
+    "path": "@preview/charged-ieee:0.1.4/lib.typ",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/charged-ieee/0.1.4/lib.typ",
+    "fixture": "charged-ieee/lib.typ",
+    "bytes": 7160,
+    "sha256": "874df44320b3c60b9b09be60cf9e7ed006726ef502af39b0f4cdda5a30141ffc"
+  },
+  {
+    "path": "@preview/charged-ieee:0.1.4/typst.toml",
+    "url": "https://raw.githubusercontent.com/typst/packages/574e4acdf56b4f2f812e9366bed0688746143030/packages/preview/charged-ieee/0.1.4/typst.toml",
+    "fixture": "charged-ieee/typst.toml",
+    "bytes": 671,
+    "sha256": "6f0ea7299fb45bca5e3568a25906373a3ad90ec34bbddd1d4c1f67c3faff28da"
+  },
+  {
+    "path": "@preview/cmarker:0.1.8/lib.typ",
+    "url": "https://raw.githubusercontent.com/corca-ai/wasmtypst/0bec495c9bc55b3cefe9e03eee07935354b21ceb/tests/fixtures/cmarker/lib.typ",
+    "fixture": "cmarker/lib.typ",
+    "bytes": 11076,
+    "sha256": "76e8fb47ff4986df44285c55e3252257e2dca3f86983df2e11851b369490ba0a"
+  },
+  {
+    "path": "@preview/cmarker:0.1.8/typst.toml",
+    "url": "https://raw.githubusercontent.com/corca-ai/wasmtypst/0bec495c9bc55b3cefe9e03eee07935354b21ceb/tests/fixtures/cmarker/typst.toml",
+    "fixture": "cmarker/typst.toml",
+    "bytes": 343,
+    "sha256": "1bba3fdde95f0eb2b222f1826c5c8baf823a2deb74e957cb84656585d7cc45e5"
+  },
+  {
+    "path": "@preview/cmarker:0.1.8/plugin.wasm",
+    "url": "https://raw.githubusercontent.com/corca-ai/wasmtypst/0bec495c9bc55b3cefe9e03eee07935354b21ceb/tests/fixtures/cmarker/plugin.wasm",
+    "fixture": "cmarker/plugin.wasm",
+    "bytes": 322606,
+    "sha256": "b82a60ac048a9d04b0a94a755e1ebe0387926e88f91d0d763a98a379445af330"
+  },
+  {
+    "path": "fonts/texgyrecursor-regular.otf",
+    "url": "https://mirrors.ctan.org/fonts/tex-gyre/opentype/texgyrecursor-regular.otf",
+    "fixture": "tex-gyre/texgyrecursor-regular.otf",
+    "bytes": 84652,
+    "sha256": "0667deb48aa0e88be8f499c4d308e8b9116f290e7f969b0f5a34ee15c9644272"
+  },
+  {
+    "path": "fonts/texgyretermes-bold.otf",
+    "url": "https://mirrors.ctan.org/fonts/tex-gyre/opentype/texgyretermes-bold.otf",
+    "fixture": "tex-gyre/texgyretermes-bold.otf",
+    "bytes": 139480,
+    "sha256": "2fb3e952065fa153c7e4e64e04b98b9d79225739b6025aa3f0f0782d299ff61e"
+  },
+  {
+    "path": "fonts/texgyretermes-bolditalic.otf",
+    "url": "https://mirrors.ctan.org/fonts/tex-gyre/opentype/texgyretermes-bolditalic.otf",
+    "fixture": "tex-gyre/texgyretermes-bolditalic.otf",
+    "bytes": 144180,
+    "sha256": "1bf6af99cb0e26c12951317032d79b96ae009551e59ccf02a5b24f325ecfec87"
+  },
+  {
+    "path": "fonts/texgyretermes-italic.otf",
+    "url": "https://mirrors.ctan.org/fonts/tex-gyre/opentype/texgyretermes-italic.otf",
+    "fixture": "tex-gyre/texgyretermes-italic.otf",
+    "bytes": 141324,
+    "sha256": "6dd103a1672e50568cd2f8a706ccd48443d44d7d073a59d2286f4e6f746575d6"
+  },
+  {
+    "path": "fonts/texgyretermes-regular.otf",
+    "url": "https://mirrors.ctan.org/fonts/tex-gyre/opentype/texgyretermes-regular.otf",
+    "fixture": "tex-gyre/texgyretermes-regular.otf",
+    "bytes": 140932,
+    "sha256": "cc3fe7c707b81428d23d54df3eadd9228a2bf6a4d43125d94df56f5f63134659"
+  },
+  {
+    "path": "fonts/NotoSansCJKkr-Subset.otf",
+    "url": "https://fixtures.invalid/corpus/NotoSansCJKkr-Subset.otf",
+    "fixture": "corpus/NotoSansCJKkr-Subset.otf",
+    "bytes": 13620,
+    "sha256": "e9431a70e547aee6ad46988b6550903c96a2a18f7cf6e6ebd70229bd82014284"
+  }
+]
