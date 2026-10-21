@@ -165,3 +165,34 @@ try {
 console.log(
   "The actual interactive example retains its diagram in both output targets",
 );
+
+let ownedCompiler;
+const retired = new CompilerSession(async () => {
+  ownedCompiler = await createCompiler();
+  return ownedCompiler;
+});
+try {
+  assert.equal(
+    (
+      await retired.compile({
+        entry: "main.typ",
+        files: { "main.typ": "Before retirement" },
+      })
+    ).success,
+    true,
+  );
+  ownedCompiler.dispose();
+  assert.equal(ownedCompiler.isDisposed, true);
+  assert.equal(
+    (
+      await retired.compile({
+        entry: "main.typ",
+        files: { "main.typ": "After retirement" },
+      })
+    ).success,
+    true,
+  );
+} finally {
+  retired.dispose();
+}
+console.log("The next snapshot recovers a worker retired outside compilation");

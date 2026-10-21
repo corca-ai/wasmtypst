@@ -95,6 +95,7 @@ export class CompilerSession {
         this.#pending = undefined;
         this.#running = job;
         try {
+          if (this.#compiler?.isDisposed) this.#compiler = undefined;
           if (!this.#compiler) {
             const compiler = await this.#factory();
             if (this.#disposed || job.settled) {

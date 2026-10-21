@@ -284,6 +284,9 @@ export class Compiler {
   }> {
     return this.#invoke({ kind: "stats" });
   }
+  get isDisposed(): boolean {
+    return this.#disposed;
+  }
   dispose(): void {
     this.#fail(new Error("Compiler is disposed"));
   }
