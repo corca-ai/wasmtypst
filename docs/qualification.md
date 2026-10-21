@@ -98,3 +98,8 @@ A commercial host still needs its own representative document/package corpus,
 resource-constrained-device qualification and operating budgets. The engine
 provides no hard process memory cap, and Typst's upstream HTML target remains
 in development. CorTeX integration is reviewed separately in its own repository.
+
+The final source-cache regression also verifies references and rename across an
+imported `.txt` source, including after atomic replacement. On-demand source
+cells retain those syntax trees once used, while untouched UTF-8 assets remain
+unparsed. The native suite now contains sixteen integration cases.

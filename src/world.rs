@@ -20,6 +20,7 @@ pub struct MemoryWorld {
     fonts: Vec<Font>,
     pub files: HashMap<FileId, Bytes>,
     pub sources: HashMap<FileId, Source>,
+    lazy_sources: HashMap<FileId, std::sync::OnceLock<Source>>,
     pub main: FileId,
     pub date: Option<Datetime>,
     pub accessed: std::sync::Arc<Mutex<HashSet<FileId>>>,
@@ -89,6 +90,7 @@ impl MemoryWorld {
             fonts,
             files: HashMap::new(),
             sources: HashMap::new(),
+            lazy_sources: HashMap::new(),
             main: file_id("main.typ").unwrap(),
             date: None,
             accessed: Default::default(),
@@ -123,17 +125,20 @@ impl MemoryWorld {
         if !self.files.contains_key(&id) && self.files.len() >= MAX_FILES {
             return Err("Project exceeds 4096 files".into());
         }
-        if let Some(text) = std::str::from_utf8(&bytes)
-            .ok()
-            .filter(|_| path.ends_with(".typ") || self.sources.contains_key(&id))
-        {
+        if let Ok(text) = std::str::from_utf8(&bytes) {
             if let Some(source) = self.sources.get_mut(&id) {
                 source.replace(text);
-            } else {
+            } else if path.ends_with(".typ") {
                 self.sources.insert(id, Source::new(id, text.into()));
+            } else {
+                let cell = self.lazy_sources.entry(id).or_default();
+                if let Some(source) = cell.get_mut() {
+                    source.replace(text);
+                }
             }
         } else {
             self.sources.remove(&id);
+            self.lazy_sources.remove(&id);
         }
         self.file_hashes.insert(id, Sha256::digest(&bytes).into());
         self.files.insert(id, Bytes::new(bytes));
@@ -143,8 +148,15 @@ impl MemoryWorld {
     pub fn remove(&mut self, path: &str) -> Result<bool, String> {
         let id = file_id(path)?;
         self.sources.remove(&id);
+        self.lazy_sources.remove(&id);
         self.file_hashes.remove(&id);
         Ok(self.files.remove(&id).is_some())
+    }
+
+    pub fn parsed_sources(&self) -> impl Iterator<Item = &Source> {
+        self.sources
+            .values()
+            .chain(self.lazy_sources.values().filter_map(|cell| cell.get()))
     }
 
     pub fn add_font(&mut self, bytes: Vec<u8>) -> Result<bool, String> {
@@ -239,7 +251,12 @@ impl World for MemoryWorld {
             .get(&id)
             .ok_or_else(|| FileError::NotFound(id.vpath().get_without_slash().into()))?;
         let text = std::str::from_utf8(bytes.as_slice()).map_err(|_| FileError::InvalidUtf8)?;
-        Ok(Source::new(id, text.into()))
+        Ok(self
+            .lazy_sources
+            .get(&id)
+            .expect("UTF-8 inventory has a source cell")
+            .get_or_init(|| Source::new(id, text.into()))
+            .clone())
     }
 
     fn file(&self, id: FileId) -> FileResult<Bytes> {

@@ -361,3 +361,53 @@ fn utf8_assets_are_not_eagerly_parsed_and_arbitrary_sources_still_work() {
         .unwrap();
     assert!(engine.compile().success);
 }
+
+#[test]
+fn imported_non_typ_sources_participate_in_reference_and_rename_plans() {
+    let mut engine = Engine::new();
+    engine
+        .put("part.txt", b"#let answer = 42\n#answer".to_vec())
+        .unwrap();
+    engine
+        .put(
+            "main.typ",
+            b"#import \"part.txt\": answer\n#answer".to_vec(),
+        )
+        .unwrap();
+    assert!(engine.compile().success);
+    let refs = engine
+        .request(serde_json::json!({"op":"references","path":"part.txt","offset":6}))
+        .unwrap();
+    assert!(
+        refs.as_array()
+            .unwrap()
+            .iter()
+            .any(|r| r["path"] == "part.txt" && r["from"] == 5)
+    );
+    let plan = engine
+        .request(serde_json::json!({"op":"rename","path":"part.txt","offset":6,"newName":"result"}))
+        .unwrap();
+    assert!(plan["edits"].as_array().unwrap().len() >= 3);
+    engine
+        .snapshot(
+            vec![
+                (
+                    "main.typ".into(),
+                    b"#import \"part.txt\": answer\n#answer".to_vec(),
+                ),
+                ("part.txt".into(), b"#let answer = 43\n#answer".to_vec()),
+            ],
+            "main.typ",
+        )
+        .unwrap();
+    assert!(engine.compile().success);
+    assert_eq!(
+        engine
+            .request(serde_json::json!({"op":"references","path":"part.txt","offset":6}))
+            .unwrap()
+            .as_array()
+            .unwrap()
+            .len(),
+        refs.as_array().unwrap().len()
+    );
+}
