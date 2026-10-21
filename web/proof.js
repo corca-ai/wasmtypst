@@ -1,5 +1,6 @@
 import { createCompiler } from "/dist/index.js";
 import { Preview } from "/dist/preview.js";
+import { createSyntaxParser } from "/dist/syntax.js";
 const check = (condition, message) => {
   if (!condition) throw new Error(message);
 };
@@ -27,6 +28,11 @@ async function paint(result) {
 }
 window.proof = { done: false };
 try {
+  const syntax = await createSyntaxParser();
+  check(
+    syntax.parse("= 결과😀\r\n*bold*").to === "= 결과😀\r\n*bold*".length,
+    "Native syntax UTF-16 offsets",
+  );
   compiler = await createCompiler({ files: { "main.typ": source } });
   view = new Preview(host, compiler);
   const first = await compiler.compile();
@@ -195,6 +201,25 @@ try {
     await paint(result);
     if (i) largeTimes.push(performance.now() - start);
   }
+  await compiler.snapshot({
+    files: { "main.typ": "$ x + y &= 1 \\ x &= 2 $" },
+    entry: "main.typ",
+  });
+  const aligned = await compiler.compileHtml({ math: true });
+  check(aligned.success, JSON.stringify(aligned.diagnostics));
+  const isolated = document.createElement("div");
+  document.body.append(isolated);
+  const shadow = isolated.attachShadow({ mode: "open" });
+  shadow.innerHTML = aligned.math[0].html;
+  const cells = [...shadow.querySelectorAll("mtd")];
+  check(cells.length >= 4, "Aligned MathML cells missing");
+  check(
+    getComputedStyle(cells[0]).textAlign === "right" &&
+      getComputedStyle(cells[1]).textAlign === "left" &&
+      parseFloat(getComputedStyle(cells[0]).paddingLeft) === 0,
+    "Isolated equation styles lost",
+  );
+  isolated.remove();
   const { HtmlPreview } = await import("/dist/html-preview.js");
   await compiler.snapshot({
     files: {
@@ -202,7 +227,13 @@ try {
     },
     entry: "main.typ",
   });
-  const htmlResult = await compiler.compileHtml();
+  const htmlResult = await compiler.compileHtml({ math: true });
+  check(
+    htmlResult.math.length === 1 &&
+      htmlResult.math[0].location.path === "main.typ" &&
+      htmlResult.math[0].html.includes("<msup"),
+    "Native source-bound MathML missing",
+  );
   check(htmlResult.success, JSON.stringify(htmlResult.diagnostics));
   check(
     htmlResult.html.includes("<h2>") && htmlResult.html.includes("<math>"),

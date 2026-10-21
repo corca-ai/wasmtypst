@@ -7,6 +7,9 @@ const wasm = await readFile("dist/wasm/wasmtypst_bg.wasm");
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 if (hash(wasm) !== receipt.wasm.sha256)
   throw new Error("WASM provenance mismatch");
+const syntax = await readFile("dist/syntax/wasmtypst_syntax_bg.wasm");
+if (hash(syntax) !== receipt.syntax.sha256)
+  throw new Error("Syntax WASM provenance mismatch");
 await mkdir("report/release", { recursive: true });
 const pack = JSON.parse(
   execFileSync(

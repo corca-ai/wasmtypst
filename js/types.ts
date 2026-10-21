@@ -34,8 +34,14 @@ export interface CompileResult {
   missingFiles: string[];
   fingerprint: string;
 }
+export interface HtmlOptions {
+  /** Return native MathML fragments with exact source locations for visual editors. */
+  math?: boolean;
+}
 export interface HtmlResult extends Omit<CompileResult, "pages"> {
   html: string | null;
+  /** Untrusted markup. Isolate or sanitize before showing it in a trusted DOM. */
+  math: { location: SourceLocation; html: string }[];
 }
 export interface ProjectSnapshot {
   files: Record<string, string | Uint8Array<ArrayBuffer>>;
@@ -100,7 +106,8 @@ export interface CompilerOptions {
 }
 export type Query =
   | { op: "entry" | "remove"; path: string }
-  | { op: "compile" | "compileHtml" }
+  | { op: "compile" }
+  | ({ op: "compileHtml" } & HtmlOptions)
   | ({ op: "configure" } & Configuration)
   | {
       op: "completion" | "hover" | "definition" | "references";

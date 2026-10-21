@@ -24,6 +24,7 @@ try {
   run("cargo", [
     "build",
     "--locked",
+    "--workspace",
     "--release",
     "--target",
     "wasm32-unknown-unknown",
@@ -37,6 +38,16 @@ try {
     "--out-name",
     "wasmtypst",
     "target/wasm32-unknown-unknown/release/wasmtypst.wasm",
+  ]);
+  await mkdir("dist/syntax", { recursive: true });
+  run("wasm-bindgen", [
+    "--target",
+    "web",
+    "--out-dir",
+    "dist/syntax",
+    "--out-name",
+    "wasmtypst_syntax",
+    "target/wasm32-unknown-unknown/release/wasmtypst_syntax.wasm",
   ]);
   const optimized = !process.argv.includes("--skip-opt");
   if (optimized)
@@ -55,6 +66,26 @@ try {
   if (optimized) {
     const { rename } = await import("node:fs/promises");
     await rename("dist/wasm/optimized.wasm", "dist/wasm/wasmtypst_bg.wasm");
+  }
+  if (optimized)
+    run(resolve("node_modules/.bin/wasm-opt"), [
+      "-Oz",
+      "--enable-bulk-memory",
+      "--enable-nontrapping-float-to-int",
+      "--enable-sign-ext",
+      "--enable-mutable-globals",
+      "--enable-reference-types",
+      "--enable-multivalue",
+      "dist/syntax/wasmtypst_syntax_bg.wasm",
+      "-o",
+      "dist/syntax/optimized.wasm",
+    ]);
+  if (optimized) {
+    const { rename } = await import("node:fs/promises");
+    await rename(
+      "dist/syntax/optimized.wasm",
+      "dist/syntax/wasmtypst_syntax_bg.wasm",
+    );
   }
   run(resolve("node_modules/.bin/tsc"), []);
   run(process.execPath, [resolve("scripts/notices.mjs")]);
@@ -79,6 +110,10 @@ try {
     wasmBindgenVersion: version,
     rustc: execFileSync("rustc", ["--version"], { encoding: "utf8" }).trim(),
     cargoLockSha256: sha256(await readFile("Cargo.lock")),
+    syntax: {
+      bytes: (await readFile("dist/syntax/wasmtypst_syntax_bg.wasm")).length,
+      sha256: sha256(await readFile("dist/syntax/wasmtypst_syntax_bg.wasm")),
+    },
     wasm: {
       bytes: wasm.byteLength,
       gzipBytes: gzipSync(wasm, { level: 9 }).byteLength,

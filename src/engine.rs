@@ -35,7 +35,7 @@ pub struct Engine {
     compiled_revision: Option<u32>,
     report: Option<CompileReport>,
     pdf: Option<Vec<u8>>,
-    html: Option<Value>,
+    html: Option<(bool, Value)>,
 }
 
 impl Default for Engine {
@@ -122,14 +122,24 @@ impl Engine {
 
     /// Semantic HTML uses the same World but the HTML target has independent diagnostics.
     pub fn compile_html(&mut self) -> Value {
-        if let Some(result) = &self.html {
+        self.compile_html_with_math(false)
+    }
+
+    pub fn compile_html_with_math(&mut self, include_math: bool) -> Value {
+        if let Some((cached_math, result)) = &self.html
+            && *cached_math == include_math
+        {
             return result.clone();
         }
         let result = typst::compile::<typst_html::HtmlDocument>(&self.world);
         let mut diagnostics: Vec<_> = result.warnings.iter().map(|d| self.diagnostic(d)).collect();
-        let output = result
-            .output
-            .and_then(|doc| typst_html::html(&doc, &Default::default()));
+        let mut math = Vec::new();
+        let output = result.output.and_then(|doc| {
+            if include_math {
+                self.html_math(&doc, doc.root_node(), &mut math);
+            }
+            typst_html::html(&doc, &Default::default())
+        });
         let html = match output {
             Ok(html) => Some(html),
             Err(errors) => {
@@ -153,10 +163,56 @@ impl Engine {
             .collect();
         let report = json!({"revision":self.revision, "success":html.is_some(), "html":html,
             "diagnostics":diagnostics, "dependencies":dependencies, "missingFiles":missing,
-            "fingerprint": self.world.fingerprint()});
-        self.html = Some(report.clone());
+            "fingerprint": self.world.fingerprint(), "math": if html.is_some() { math } else { Vec::new() }});
+        self.html = Some((include_math, report.clone()));
         comemo::evict(10);
         report
+    }
+
+    fn html_math(
+        &self,
+        document: &typst_html::HtmlDocument,
+        node: &typst_html::HtmlNode,
+        output: &mut Vec<Value>,
+    ) {
+        if let typst_html::HtmlNode::Element(element) = node {
+            if element.tag == typst_html::tag::mathml::math {
+                let location = element.span.id().and_then(|id| {
+                    self.world
+                        .range(element.span)
+                        .and_then(|range| self.location(id, range))
+                });
+                if let Some(location) = location {
+                    let mut fragment = document.clone();
+                    // MathML alignment classes depend on the document's generated CSS.
+                    // Keep head styles in the isolated fragment; these remain untrusted
+                    // document output and must be sanitized or sandboxed by the host.
+                    let mut root = typst_html::HtmlElement::new(typst_html::tag::div);
+                    for child in &document.root().children {
+                        if let typst_html::HtmlNode::Element(head) = child
+                            && head.tag == typst_html::tag::head
+                        {
+                            for child in &head.children {
+                                if let typst_html::HtmlNode::Element(style) = child
+                                    && style.tag == typst_html::tag::style
+                                {
+                                    root.children.push(child.clone());
+                                }
+                            }
+                        }
+                    }
+                    root.children.push(element.clone().into());
+                    *fragment.root_mut() = root;
+                    if let Ok(html) = typst_html::html(&fragment, &Default::default()) {
+                        output.push(json!({"location": location, "html": html}));
+                    }
+                }
+            } else {
+                for child in &element.children {
+                    self.html_math(document, child, output);
+                }
+            }
+        }
     }
 
     pub fn remove(&mut self, path: &str) -> Result<u32, String> {
@@ -316,7 +372,14 @@ impl Engine {
         match op {
             "entry" => Ok(json!(self.entry(path)?)),
             "remove" => Ok(json!(self.remove(path)?)),
-            "compileHtml" => Ok(self.compile_html()),
+            "compileHtml" => {
+                let include_math = request
+                    .get("math")
+                    .map(|value| value.as_bool().ok_or("math must be boolean"))
+                    .transpose()?
+                    .unwrap_or(false);
+                Ok(self.compile_html_with_math(include_math))
+            }
             "compile" => Ok(serde_json::to_value(self.compile()).unwrap()),
             "configure" => {
                 let mut inputs = Dict::new();

@@ -411,3 +411,43 @@ fn imported_non_typ_sources_participate_in_reference_and_rename_plans() {
         refs.as_array().unwrap().len()
     );
 }
+
+#[test]
+fn native_math_fragments_are_opt_in_and_source_bound() {
+    let mut engine = Engine::new();
+    let text = "😀 $frac(1, 2)$ and $ pi^2 $";
+    engine.put("main.typ", text.as_bytes().to_vec()).unwrap();
+    let plain = engine.compile_html();
+    assert!(plain["math"].as_array().unwrap().is_empty());
+    let mapped = engine.compile_html_with_math(true);
+    assert_eq!(mapped["success"], true, "{mapped}");
+    let math = mapped["math"].as_array().unwrap();
+    assert_eq!(math.len(), 2);
+    assert_eq!(
+        math[0]["location"],
+        serde_json::json!({"path":"main.typ","from":3,"to":15})
+    );
+    assert!(math[0]["html"].as_str().unwrap().contains("<mfrac"));
+    assert_eq!(engine.compile_html()["math"], serde_json::json!([]));
+    engine.put("main.typ", b"No equation".to_vec()).unwrap();
+    assert!(
+        engine.compile_html_with_math(true)["math"]
+            .as_array()
+            .unwrap()
+            .is_empty()
+    );
+}
+
+#[test]
+fn native_math_fragments_retain_equation_styles() {
+    let mut engine = Engine::new();
+    engine
+        .put("main.typ", br"$ x + y &= 1 \ x &= 2 $".to_vec())
+        .unwrap();
+    let output = engine.compile_html_with_math(true);
+    assert_eq!(output["success"], true, "{output}");
+    let fragment = output["math"][0]["html"].as_str().unwrap();
+    assert!(fragment.contains("<style>"), "{fragment}");
+    assert!(fragment.contains("text-align: right"), "{fragment}");
+    assert!(fragment.contains("<mtable"), "{fragment}");
+}

@@ -103,3 +103,15 @@ The final source-cache regression also verifies references and rename across an
 imported `.txt` source, including after atomic replacement. On-demand source
 cells retain those syntax trees once used, while untouched UTF-8 assets remain
 unparsed. The native suite now contains sixteen integration cases.
+
+## 0.3.0 visual editing foundation
+
+The syntax-only module measured 290,589 raw bytes. A local 25-sample Node run
+parsed 11,600 UTF-16 units of actual headings, prose, emphasis and equations at
+2.07 ms median / 3.99 ms p95. This is a parser benchmark, not editor latency or
+a large-document guarantee. Native tests cover UTF-16 including astral text and
+CRLF, malformed syntax, decoded escapes, node/input limits and subsequent use.
+The packed consumer imports the actual syntax module and its public declarations.
+All three browser engines run the real syntax grammar. Compiler tests check
+opt-in MathML fragments against their actual equation source ranges and cache
+invalidation; hosts still own sanitization, source admission and editing.

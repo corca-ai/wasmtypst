@@ -8,6 +8,7 @@ import type {
   FormatEdit,
   Hover,
   HtmlResult,
+  HtmlOptions,
   ProjectSnapshot,
   Jump,
   PagePoint,
@@ -181,16 +182,19 @@ export class Compiler {
   compile(): Promise<CompileResult> {
     return this.#compile("compile");
   }
-  compileHtml(): Promise<HtmlResult> {
-    return this.#compile("compileHtml");
+  compileHtml(options: HtmlOptions = {}): Promise<HtmlResult> {
+    return this.#compile("compileHtml", options);
   }
   async #compile<T extends CompileResult | HtmlResult>(
     op: "compile" | "compileHtml",
+    options: HtmlOptions = {},
   ): Promise<T> {
     const epoch = this.#epoch;
     const attempted = new Set<string>();
     for (let round = 0; round < 64; round++) {
-      const result = await this.#query<T>({ op });
+      const result = await this.#query<T>(
+        op === "compileHtml" ? { op, ...options } : { op },
+      );
       if (epoch !== this.#epoch)
         throw new Error("Compilation superseded by a source mutation");
       if (result.success || !this.#resolver) return result;
