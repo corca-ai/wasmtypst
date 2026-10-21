@@ -143,3 +143,25 @@ try {
 console.log(
   "Real WASM memory ceiling and recovery after resource exhaustion passed",
 );
+
+const demo = await readFile(
+  new URL("../web/index.html", import.meta.url),
+  "utf8",
+);
+const source = demo.match(/<textarea[^>]*>([\s\S]*?)<\/textarea>/)?.[1];
+assert.ok(source);
+const example = await createCompiler({ files: { "main.typ": source } });
+try {
+  assert.equal((await example.compile()).success, true);
+  const html = await example.compileHtml();
+  assert.equal(html.success, true, JSON.stringify(html.diagnostics));
+  assert.match(html.html, /<svg/);
+  assert.ok(
+    !html.diagnostics.some((d) => d.message.includes("rect was ignored")),
+  );
+} finally {
+  example.dispose();
+}
+console.log(
+  "The actual interactive example retains its diagram in both output targets",
+);

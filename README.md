@@ -162,7 +162,9 @@ Invalid snapshots leave the current world and output intact. The caller owns the
 source snapshot; concurrent host mutations supersede a compile or dependency
 resolution rather than admitting mixed results. HTML has its own target
 diagnostics and does not require paginated layout. Typst 0.15.1 still marks its
-HTML target as an in-development feature; PDF-only packages may refuse it.
+HTML target as an in-development feature; PDF-only packages may refuse it. Use `html.frame` for layout-based diagrams
+that must remain graphical in HTML; the interactive example shows a
+`context target()` rule that also preserves paginated output.
 
 ```ts
 import { HtmlPreview } from 'wasmtypst/html-preview';
