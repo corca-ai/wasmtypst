@@ -51,7 +51,14 @@ resolved definition spans across admitted source files. Rename returns a
 revision-bound edit plan, respects lexical shadowing, refuses package edits,
 and conservatively rejects names that could collide with existing identifiers.
 It supports identifier bindings, including imports; it does not rename labels
-or arbitrary textual occurrences. No language query mutates source.
+or arbitrary textual occurrences. Semantic queries (completion, hover,
+definition, references and rename) resolve native World misses through the same
+host resolver, including when Source is incomplete and no output has compiled.
+Each newly admitted file retries the native operation; a read-only missing-files
+query avoids layout and import scanning. Resolver refusal preserves the native
+answer/error. The same 64-round, attempted-path, epoch, deadline and disposal
+fences apply as compilation. No language query edits source; admitting dependencies
+advances the revision and invalidates previous output, which hosts must refresh.
 
 Formatting uses Typstyle and refuses syntactically invalid documents. Tokens
 classify the actual syntax tree, rather than applying regexes to source.

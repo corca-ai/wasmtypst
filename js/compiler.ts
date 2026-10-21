@@ -198,42 +198,74 @@ export class Compiler {
       if (epoch !== this.#epoch)
         throw new Error("Compilation superseded by a source mutation");
       if (result.success || !this.#resolver) return result;
-      let added = false;
-      for (const path of result.missingFiles) {
-        if (attempted.has(path)) continue;
-        attempted.add(path);
-        const signal = AbortSignal.any([
-          this.#lifetime.signal,
-          AbortSignal.timeout(this.#timeout),
-        ]);
-        let release = () => {};
-        const stopped = new Promise<never>((_, reject) => {
-          const abort = () => reject(signal.reason);
-          signal.addEventListener("abort", abort, { once: true });
-          release = () => signal.removeEventListener("abort", abort);
-          if (signal.aborted) abort();
-        });
-        const bytes = await Promise.race([
-          this.#resolver(path, signal),
-          stopped,
-        ]).finally(() => release());
-        if (this.#disposed) throw new Error("Compiler is disposed");
+      const added = await this.#resolveFiles(
+        result.missingFiles,
+        attempted,
+        epoch,
+      );
+      if (!added) return result;
+    }
+    throw new Error("Dependency resolution exceeded 64 rounds");
+  }
+  async #resolveFiles(paths: string[], attempted: Set<string>, epoch: number) {
+    const resolver = this.#resolver;
+    if (!resolver) return false;
+    let added = false;
+    for (const path of paths) {
+      if (attempted.has(path)) continue;
+      attempted.add(path);
+      const signal = AbortSignal.any([
+        this.#lifetime.signal,
+        AbortSignal.timeout(this.#timeout),
+      ]);
+      let release = () => {};
+      const stopped = new Promise<never>((_, reject) => {
+        const abort = () => reject(signal.reason);
+        signal.addEventListener("abort", abort, { once: true });
+        release = () => signal.removeEventListener("abort", abort);
+        if (signal.aborted) abort();
+      });
+      const bytes = await Promise.race([
+        resolver(path, signal),
+        stopped,
+      ]).finally(() => release());
+      if (this.#disposed) throw new Error("Compiler is disposed");
+      if (epoch !== this.#epoch)
+        throw new Error(
+          "Dependency resolution superseded by a source mutation",
+        );
+      if (bytes !== null) {
+        const content =
+          typeof bytes === "string" ? new TextEncoder().encode(bytes) : bytes;
+        await this.#invoke({ kind: "put", path, bytes: content });
         if (epoch !== this.#epoch)
           throw new Error(
             "Dependency resolution superseded by a source mutation",
           );
-        if (bytes !== null) {
-          const content =
-            typeof bytes === "string" ? new TextEncoder().encode(bytes) : bytes;
-          await this.#invoke({ kind: "put", path, bytes: content });
-          if (epoch !== this.#epoch)
-            throw new Error(
-              "Dependency resolution superseded by a source mutation",
-            );
-          added = true;
-        }
+        added = true;
       }
-      if (!added) return result;
+    }
+    return added;
+  }
+  /** Resolve native World misses without constructing a document or guessing imports. */
+  async #language<T>(request: Query): Promise<T> {
+    if (!this.#resolver) return this.#query<T>(request);
+    const epoch = this.#epoch;
+    const attempted = new Set<string>();
+    for (let round = 0; round < 64; round++) {
+      const outcome = await this.#query<T>(request).then(
+        (value) => ({ ok: true as const, value }),
+        (error: unknown) => ({ ok: false as const, error }),
+      );
+      if (!outcome.ok && this.#disposed) throw outcome.error;
+      if (epoch !== this.#epoch)
+        throw new Error("Language query superseded by a source mutation");
+      const missing = await this.#query<string[]>({ op: "missingFiles" });
+      if (epoch !== this.#epoch)
+        throw new Error("Language query superseded by a source mutation");
+      if (await this.#resolveFiles(missing, attempted, epoch)) continue;
+      if (!outcome.ok) throw outcome.error;
+      return outcome.value;
     }
     throw new Error("Dependency resolution exceeded 64 rounds");
   }
@@ -244,19 +276,19 @@ export class Compiler {
     return this.#invoke({ kind: "svg", revision, page });
   }
   completion(path: string, offset: number): Promise<Completions> {
-    return this.#query({ op: "completion", path, offset });
+    return this.#language({ op: "completion", path, offset });
   }
   hover(path: string, offset: number): Promise<Hover | null> {
-    return this.#query({ op: "hover", path, offset });
+    return this.#language({ op: "hover", path, offset });
   }
   definition(path: string, offset: number): Promise<SourceLocation | null> {
-    return this.#query({ op: "definition", path, offset });
+    return this.#language({ op: "definition", path, offset });
   }
   references(path: string, offset: number): Promise<SourceLocation[]> {
-    return this.#query({ op: "references", path, offset });
+    return this.#language({ op: "references", path, offset });
   }
   rename(path: string, offset: number, newName: string): Promise<EditPlan> {
-    return this.#query({ op: "rename", path, offset, newName });
+    return this.#language({ op: "rename", path, offset, newName });
   }
   format(path: string): Promise<FormatEdit> {
     return this.#query({ op: "format", path });

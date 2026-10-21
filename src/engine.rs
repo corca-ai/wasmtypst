@@ -381,6 +381,19 @@ impl Engine {
                 Ok(self.compile_html_with_math(include_math))
             }
             "compile" => Ok(serde_json::to_value(self.compile()).unwrap()),
+            "missingFiles" => {
+                let mut missing: Vec<_> = self
+                    .world
+                    .accessed
+                    .lock()
+                    .unwrap()
+                    .iter()
+                    .filter(|id| !self.world.files.contains_key(id))
+                    .map(|id| path_for(*id))
+                    .collect();
+                missing.sort();
+                Ok(json!(missing))
+            }
             "configure" => {
                 let mut inputs = Dict::new();
                 if let Some(values) = request["inputs"].as_object() {

@@ -106,7 +106,7 @@ export interface CompilerOptions {
 }
 export type Query =
   | { op: "entry" | "remove"; path: string }
-  | { op: "compile" }
+  | { op: "compile" | "missingFiles" }
   | ({ op: "compileHtml" } & HtmlOptions)
   | ({ op: "configure" } & Configuration)
   | {

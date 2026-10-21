@@ -33,7 +33,32 @@ try {
     syntax.parse("= 결과😀\r\n*bold*").to === "= 결과😀\r\n*bold*".length,
     "Native syntax UTF-16 offsets",
   );
-  compiler = await createCompiler({ files: { "main.typ": source } });
+  const packageSource = '#import "@preview/ide-proof:0.1.0": *\n#';
+  const packageFiles = {
+    "@preview/ide-proof:0.1.0/typst.toml":
+      '[package]\nname = "ide-proof"\nversion = "0.1.0"\nentrypoint = "lib.typ"',
+    "@preview/ide-proof:0.1.0/lib.typ": "#let package-function(x) = x",
+  };
+  const semanticRequests = [];
+  compiler = await createCompiler({
+    files: { "main.typ": packageSource },
+    resolveFile: async (path) => {
+      semanticRequests.push(path);
+      return packageFiles[path] ?? null;
+    },
+  });
+  const semantic = await compiler.completion("main.typ", packageSource.length);
+  check(
+    semantic.items.some((item) => item.label === "package-function"),
+    "Source-only package completion",
+  );
+  check(
+    semanticRequests.length === 2,
+    "Manifest and entrypoint each resolve once",
+  );
+  await compiler.completion("main.typ", packageSource.length);
+  check(semanticRequests.length === 2, "Warm query reuses files");
+  await compiler.snapshot({ files: { "main.typ": source }, entry: "main.typ" });
   view = new Preview(host, compiler);
   const first = await compiler.compile();
   check(first.success, JSON.stringify(first.diagnostics));
