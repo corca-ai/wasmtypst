@@ -165,7 +165,11 @@ export async function extendedCases(readText, readBytes) {
         name: "upstream-finite-volume-full-images",
         entry,
         files: { ...files },
-        resourceLimit: true,
+        largeRaster: true,
+        adapted: true,
+        html: true,
+        memoryBudgetMiB: 384,
+        containsHtml: ["Pixels and their Neighbours"],
         minPages: 7,
       });
       const derivatives = JSON.parse(
@@ -271,6 +275,11 @@ const pdfText = {
   layout: ["Treatment arm", "Control arm"],
   "upstream-elsearticle": ["Title of the paper", "Author"],
   "upstream-math-paper": ["Typst template for mathematical papers", "Author 1"],
+  "upstream-finite-volume-full-images": [
+    "Pixels and their Neighbours",
+    "Finite Volume",
+    "Cockett",
+  ],
   "upstream-finite-volume-adapted": [
     "Pixels and their Neighbours",
     "Finite Volume",

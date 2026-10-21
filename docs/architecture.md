@@ -144,7 +144,10 @@ that would make a bundler emit the oversized raw asset. The raw module remains
 available for explicit hosts and Node. Build locking prevents concurrent
 builders from interleaving release files.
 
-The release module sets a 256 MiB maximum for WASM linear memory. Allocation
+The default compiler sets a 512 MiB maximum for WASM linear memory; explicit
+256/512/1024 MiB build profiles are supported. The syntax-only parser remains
+at 256 MiB. The compiler linker setting and runtime metadata come from the
+same validated build-script value; builds verify the real growth boundary. Allocation
 exhaustion becomes a fatal worker error; CompilerSession recreates the worker
 for the next supplied snapshot. This bounds the engine's linear heap, not JS
 buffers, compiled code or process RSS. Tests exercise actual memory growth
@@ -189,7 +192,8 @@ and timing. The long fixture is generated academic content; CJK glyph coverage
 is deliberately limited to the redistributable subset's fixture text.
 
 The corpus additionally compares PDF SHA-256 across runtimes and enforces a
-96 MiB linear-memory high-water budget for successful project groups. A narrow
+96 MiB linear-memory high-water budget for small successful project groups
+and a 384 MiB budget for the full-resolution raster tutorial. A narrow
 Chromium viewport with 4x page CPU throttling is an additional host scenario;
 it is not a measurement of throttled Worker CPU or a physical mobile device.
 
@@ -198,12 +202,23 @@ incompatibilities against a separate official native CLI. Known failures must
 match their exact diagnostic and source path; an unrelated failure is not an
 accepted result. Synthetic refusals require a subsequent successful snapshot
 and PDF export in the same Worker. The full-resolution image case uses its own
-Worker, reproduces a fatal PDF-export trap and verifies fresh-Worker recovery;
-it is reported as a known resource limit, not a supported export. Its adapted,
-explicitly downsampled counterpart is qualified separately.
+project Worker and must export PDF/SVG/HTML with the default 512 MiB compiler.
+Its API-adapted full-size and downsampled variants are qualified separately.
+The additional memory-profile comparison retains the original 256 MiB export
+trap and compares it with successful 512 MiB and 1 GiB runs. CompilerSession
+recovery after actual allocation exhaustion is separately exercised.
 
 The original five scenarios share one World. Extended scenarios represent
 separate projects and dispose their Workers on close, while retaining the same
 World for edits within each document. The report records this grouping. These
 measurements do not promise a 96 MiB limit when unrelated projects are retained
 indefinitely in one World, nor a complete HTML projection of layout constructs.
+
+The maximum is a WASM linear-memory ceiling rather than a process/JS budget or
+an eager reservation of that many physical bytes. `stats()` returns the actual
+compiled ceiling; changing it requires another build and a fresh Worker.
+Fingerprints include the compiler's memory profile. The matrix measures whole
+Node process peak RSS in fresh processes, separately from observed WASM high
+water. Browser observations cover WASM memory; they do not claim browser-process
+RSS. The default 512 MiB choice supports the qualified full-resolution tutorial
+without changing source images or raising the syntax parser ceiling.

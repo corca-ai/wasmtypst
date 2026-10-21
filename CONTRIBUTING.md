@@ -24,7 +24,21 @@ expected text and rasterize the first/last pages into ignored `report/corpus/`.
 For independent upstream qualification, obtain the official Typst 0.15.1 CLI
 and run `TYPST_NATIVE_BIN=/absolute/path/to/typst bun run test:corpus:native`.
 CI runs this separately with a SHA-256-pinned Linux release archive. It confirms
-which original templates also fail natively and whether the full-resolution
-image document exports outside the browser memory limit. Keep upstream source
+which original templates also fail natively and that the full-resolution
+image document also exports natively. Keep upstream source
 and asset hashes in `tests/fixtures/corpus/upstream.json`; preserve originals
 and document adaptations separately instead of silently patching vendor files.
+
+The compiler defaults to a 512 MiB WASM linear-memory ceiling. Override it with
+`WASMTYPST_MEMORY_LIMIT_MIB=256|512|1024` for `bun run build`; the independent
+syntax parser stays at 256 MiB. This controls WASM growth, not total process
+memory. Build receipts and runtime stats report the compiled value.
+
+To repeat the memory experiment, build the default SDK first, then run
+`bun run build:memory-profiles` and `bun run benchmark:memory`. The first command
+backs up/restores the complete default SDK around two additional optimized
+builds. Comparison assets are ignored under `tests/fixtures/.memory-profiles/`
+and are never packaged into the runtime. The second command uses real Node
+processes (not Bun's Node-compatible mode), validates actual memory growth
+ceilings, runs three independent Node samples per profile and exercises all
+three browsers. CI runs the comparison and uploads its receipts/measurements.

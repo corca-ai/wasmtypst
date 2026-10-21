@@ -259,14 +259,12 @@ No network, persistence or cache is added to the compiler engine or core import.
 `bun run test:corpus` verifies 18 contracts in Node, Chromium, Firefox and
 WebKit, plus a narrow-viewport Chromium host with 4x page CPU throttling:
 
-- 12 supported documents: the original five cases, mathematical proofs and
+- 13 supported documents: the original five cases, mathematical proofs and
   matrices, CSV/JSON reporting, multilingual CRLF source, page/column/grid layout,
-  upstream Elsevier and mathematical-paper examples, and an explicitly adapted
-  image-heavy finite-volume tutorial.
+  upstream Elsevier and mathematical-paper examples, and explicitly API-adapted
+  finite-volume tutorial variants with full-resolution and downsampled figures.
 - Two original upstream examples with known old-API incompatibilities,
   reproduced with the official native Typst 0.15.1 CLI.
-- One full-resolution image document that compiles but traps during WASM PDF
-  export near the 256 MiB heap limit; a fresh Worker must recover afterward.
 - Three intentional refusals (malformed source, unapproved package, invalid
   bibliography), each followed by a valid document in the same Worker.
 
@@ -293,8 +291,45 @@ locally and uploaded by CI.
 
 `CORPUS_SAMPLES=25 bun run test:corpus` collects more editing samples. The
 original five cases reuse one World; extended documents each own a project
-Worker and reuse it for their edits, disposing it on project close. Successful
+Worker and reuse it for their edits, disposing it on project close. Small-document
 project groups retain the 96 MiB WASM linear-memory budget; the full-resolution
-stress case is separately classified and isolated. Neither budget bounds total
+tutorial has an explicit 384 MiB regression budget. Neither budget bounds total
 browser memory. Page CPU throttling does not certify Worker CPU throttling or
 physical mobile devices. Times are observations, not portable guarantees.
+
+## Compiler memory profiles
+
+The default compiler build permits up to **512 MiB of WASM linear memory**.
+This is a growth ceiling, not an initial allocation or a total-process limit.
+JavaScript buffers, Worker/compiled-code overhead and the surrounding application
+use additional memory. The syntax-only parser keeps its independent 256 MiB
+ceiling. Project-file/font admission limits remain separate and unchanged.
+
+`build.rs` accepts `WASMTYPST_MEMORY_LIMIT_MIB=256`, `512` or `1024`, using the
+same value for the linker and compiled metadata. For example:
+
+```sh
+WASMTYPST_MEMORY_LIMIT_MIB=1024 bun run build
+```
+
+The build verifies the actual memory boundary. `compiler.stats()` reads the
+compiled value instead of reporting a hardcoded default. Profiles are chosen
+at build time; a running instance cannot raise its compiled maximum. Hosts can
+supply a different same-revision build through the existing `wasm` option in a
+fresh Worker. Output fingerprints include the memory profile.
+
+For a repeatable 256/512/1024 MiB comparison, first build the default SDK, then
+run `bun run build:memory-profiles` and `bun run benchmark:memory`. The builder
+preserves/restores the complete default SDK. The benchmark uses three fresh
+Node processes per profile and the actual three browser engines, with original
+full-resolution tutorial figures and five edits including PDF export. It
+verifies real memory growth boundaries and identical PDF bytes across successful
+profiles. Raw results live in `report/memory-profiles.json` and CI artifacts.
+
+In the local qualification, 256 MiB refused PDF export while 512 MiB and 1 GiB
+both completed PDF/SVG/HTML and repeated exports, using about 350.8 MiB of WASM
+linear memory. Whole Node process peak RSS was about 782–791 MiB across the
+larger profiles, including custom WASM loading buffers, code and Worker overhead.
+This is not a browser-process measurement or a low-memory-device guarantee.
+The 256 MiB failure remains in the comparison matrix; it is no longer a failure
+of the default compiler on this fixture.

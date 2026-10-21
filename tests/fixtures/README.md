@@ -96,8 +96,8 @@ single-occurrence replacements are checked; original files remain unchanged.
 Deprecated paragraph spacing and raw-text warnings remain visible.
 
 The API-adapted variant with original 4000-pixel figures compiles to seven
-pages, but exceeds the WASM PDF-export resource budget; native PDF export
-succeeds. The separately qualified browser-sized variant uses derivatives in
+pages. It exceeded the former 256 MiB WASM PDF-export ceiling; default 512 MiB
+and optional 1 GiB builds now export it successfully, as does the native CLI. The separately qualified browser-sized variant uses derivatives in
 `corpus/finite-volume-images/`. Pillow 11.3.0 generated them with
 `image.thumbnail((1200, 1200), Image.Resampling.LANCZOS)` and
 `image.save(destination, optimize=True)`. No source prose or equations were

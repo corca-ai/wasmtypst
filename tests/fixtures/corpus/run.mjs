@@ -41,65 +41,6 @@ export async function runCorpus(
         compiler = undefined;
         projectGroup = group;
       }
-      if (item.resourceLimit) {
-        // This full-resolution case deliberately exhausts the runtime budget; isolate its worker.
-        const limited = await createCompiler({
-          configuration: { date: [2026, 10, 21] },
-        });
-        let beforeFailure;
-        try {
-          for (const resource of lock.filter(
-            (item) => item.path === "fonts/NotoSans.ttf",
-          ))
-            await limited.addFont(await loader.resolveFile(resource.path));
-          await limited.snapshot({ files: item.files, entry: item.entry });
-          const output = await limited.compile();
-          check(
-            output.success && output.pages.length >= item.minPages,
-            `${item.name}: unexpected compile failure ${JSON.stringify(output.diagnostics)}`,
-          );
-          beforeFailure = await limited.stats();
-          check(
-            beforeFailure.wasmLinearMemoryBytes >= 200 * 1024 * 1024,
-            `${item.name}: resource workload changed`,
-          );
-          let trapped = false;
-          try {
-            await limited.pdf(output.revision);
-          } catch (error) {
-            trapped = /unreachable/i.test(error.message);
-          }
-          check(
-            trapped,
-            `${item.name}: expected fatal export trap was not reproduced; revisit the resource contract`,
-          );
-        } finally {
-          limited.dispose();
-        }
-        const recovered = await createCompiler({
-          files: { "main.typ": "Recovered after resource exhaustion." },
-        });
-        try {
-          const output = await recovered.compile();
-          check(
-            output.success &&
-              (await recovered.pdf(output.revision)).length > 100,
-            `${item.name}: fresh worker did not recover`,
-          );
-        } finally {
-          recovered.dispose();
-        }
-        results.push({
-          name: item.name,
-          status: "known-resource-limit",
-          pdfSha256: null,
-          operation: "pdf",
-          beforeFailure,
-          recovered: true,
-        });
-        continue;
-      }
-
       let initializationMs = 0;
       if (!compiler) {
         const before = performance.now();
@@ -236,7 +177,8 @@ export async function runCorpus(
       ).join("");
       const stats = await compiler.stats();
       check(
-        stats.wasmLinearMemoryBytes <= 96 * 1024 * 1024,
+        stats.wasmLinearMemoryBytes <=
+          (item.memoryBudgetMiB ?? 96) * 1024 * 1024,
         `${item.name}: corpus linear-memory budget exceeded`,
       );
       results.push({

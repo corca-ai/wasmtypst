@@ -107,9 +107,7 @@ try {
         );
       report.results.push({
         name: item.name,
-        status: item.resourceLimit
-          ? "native-export-succeeds-wasm-resource-limit"
-          : "native-export-succeeds",
+        status: "native-export-succeeds",
         pdfBytes: (await readFile(output)).length,
       });
     }

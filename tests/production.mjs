@@ -109,7 +109,7 @@ try {
 }
 console.log("Latest-only scheduling, cancellation and worker recovery passed");
 
-// The actual module refuses growth beyond its 256 MiB linear-memory ceiling.
+// Verify the compiled memory boundary against the same profile reported by the engine.
 const bindings = await import("../dist/wasm/wasmtypst.js");
 const { readFile } = await import("node:fs/promises");
 const output = await bindings.default({
@@ -117,14 +117,19 @@ const output = await bindings.default({
     await readFile(new URL("../dist/wasm/wasmtypst_bg.wasm", import.meta.url)),
   ),
 });
-assert.throws(() => output.memory.grow(4096), RangeError);
+const profileEngine = new bindings.TypstEngine();
+const maximumPages = profileEngine.memory_limit() / 65536;
+profileEngine.free();
+const previousPages = output.memory.buffer.byteLength / 65536;
+assert.equal(output.memory.grow(maximumPages - previousPages), previousPages);
+assert.throws(() => output.memory.grow(1), RangeError);
 const bounded = new CompilerSession(() => createCompiler({ timeoutMs: 5000 }));
 try {
   await assert.rejects(
     bounded.compile({
       entry: "main.typ",
       files: {
-        "main.typ": "#let values = (" + "0,".repeat(4 * 1024 * 1024) + ")",
+        "main.typ": "#let values = range(100000000)",
       },
     }),
   );

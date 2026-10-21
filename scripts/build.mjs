@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile, open, unlink } from "node:fs/promises";
 import { resolve } from "node:path";
 import { gzipSync } from "node:zlib";
+import { verifyMemoryLimit } from "./wasm-memory-limit.mjs";
 const root = resolve(import.meta.dirname, "..");
 process.chdir(root);
 let lock;
@@ -102,11 +103,19 @@ try {
     "dist/wasm/wasmtypst_bg.wasm.gz",
     gzipSync(wasm, { level: 9 }),
   );
+  const { default: initialize, TypstEngine } = await import(
+    "../dist/wasm/wasmtypst.js"
+  );
+  const exports = await initialize({ module_or_path: wasm });
+  const metadataEngine = new TypstEngine();
+  const memoryLimit = metadataEngine.memory_limit();
+  metadataEngine.free();
+  verifyMemoryLimit(exports.memory, memoryLimit);
   const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
   const receipt = {
     optimized,
     typstVersion: "0.15.1",
-    wasmLinearMemoryLimitBytes: 256 * 1024 * 1024,
+    wasmLinearMemoryLimitBytes: memoryLimit,
     wasmBindgenVersion: version,
     rustc: execFileSync("rustc", ["--version"], { encoding: "utf8" }).trim(),
     cargoLockSha256: sha256(await readFile("Cargo.lock")),

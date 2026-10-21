@@ -217,3 +217,52 @@ These measurements exclude export and paint. Raw records are retained as
 upstream native comparisons using the official 0.15.1 release archive pinned
 by SHA-256. Package/font bytes remain test-only and are not added to the compiler
 runtime or its download.
+
+## Memory-profile qualification and default 512 MiB compiler
+
+The 256 MiB ceiling described above was an SDK policy, not a Typst/browser
+restriction. A controlled follow-up builds identical compiler sources at
+256/512/1024 MiB, keeping the syntax parser at 256 MiB. `build.rs` validates
+those choices and supplies both the linker maximum and compiled metadata;
+runtime stats read that compiled value. Build/matrix checks grow each actual
+module to its declared maximum and verify that one more page is refused.
+Fingerprints now include the memory profile. No source images are automatically
+modified and no file/font admission limits were raised.
+
+`bun run build:memory-profiles` followed by `bun run benchmark:memory` qualified
+the API-adapted tutorial with its original full-resolution PNGs, not the resized
+variant. Node measurements use three fresh Node 24.18.0 processes per profile,
+each with five edits and PDF exports; browser trials use fresh Workers in the
+actual Chromium, Firefox and WebKit engines. Profile JS bindings are verified
+identical, WASM digests match their receipts, and all successful profiles/runtimes
+produce byte-identical initial PDFs. PDF, SVG, HTML and repeated exports passed
+at both larger ceilings.
+
+| Compiler ceiling | Observed outcome | WASM linear memory | Whole Node process peak RSS (3 runs) |
+| --- | --- | ---: | ---: |
+| 256 MiB | PDF export traps | 220.9 MiB last observation before trap | 628.1–633.7 MiB |
+| 512 MiB | All operations pass | 350.75 MiB high water | 782.4–786.8 MiB |
+| 1 GiB | All operations pass | 350.75 MiB high water | 782.0–791.0 MiB |
+
+The failed 256 MiB observation is not its actual peak; the Worker is retired
+before a post-trap stats request can run. The prior direct-engine diagnostic
+recorded growth nearer the ceiling. Node RSS includes compiler code, JS/input
+buffers, custom-artifact loading and its Worker; it is not a browser memory
+measurement. Small RSS differences between the successful profiles do not
+establish a memory improvement. The larger maximum did not change the observed
+WASM high water for this workload, and neither profile allocates its maximum
+up front. These are bounded desktop observations, not mobile qualification.
+
+The default compiler therefore moves to 512 MiB, with an explicit 1 GiB build
+available for hosts that qualify larger projects. The default corpus now has
+13 successful documents, two pinned upstream API incompatibilities and three
+intentional refusals. Its full-resolution tutorial must succeed under an
+explicit 384 MiB regression budget; small-document groups keep their 96 MiB
+budget. Actual allocation-exhaustion/CompilerSession recovery is still tested,
+and the comparison matrix retains the 256 MiB refusal as a baseline. Original
+source API shims remain necessary; increasing memory does not resolve those
+upstream language-version incompatibilities.
+
+Raw samples and build receipts live in `report/memory-profiles.json`; CI runs
+its own matrix and restores the complete default SDK before packaging. The
+comparison assets stay outside `dist/` and are not shipped with the package.
