@@ -44,8 +44,8 @@ try {
 ```
 
 The Worker and compressed WASM assets resolve relative to the installed package.
-Serve JavaScript with its JavaScript MIME type and `.wasm.gz` as opaque gzip bytes
-(without an additional Content-Encoding claiming those bytes are already decoded). Bundlers must preserve the module Worker
+Serve JavaScript with its JavaScript MIME type. The loader accepts both opaque
+`.wasm.gz` bytes and hosts that transparently decode them through Content-Encoding. Bundlers must preserve the module Worker
 and generated wasm-bindgen module/assets. A host may set `wasm` to an immutable
 URL, byte buffer or compiled WebAssembly.Module. Cross-origin isolation and
 SharedArrayBuffer are not required.
