@@ -59,6 +59,29 @@ try {
   await compiler.completion("main.typ", packageSource.length);
   check(semanticRequests.length === 2, "Warm query reuses files");
   await compiler.snapshot({ files: { "main.typ": source }, entry: "main.typ" });
+  const htmlSources = await compiler.compileHtml({ sourceMap: true });
+  check(htmlSources.success, "Source-mapped HTML compiles");
+  const inertHtml = new DOMParser().parseFromString(
+    htmlSources.html,
+    "text/html",
+  );
+  check(htmlSources.sourceMap.length > 0, "HTML has native source spans");
+  for (const entry of htmlSources.sourceMap) {
+    const element = inertHtml.querySelector(`[data-typst="${entry.id}"]`);
+    check(element, "Every source span has an existing output element");
+    if (entry.text) {
+      const node = element.childNodes[entry.text.child];
+      check(
+        node?.nodeType === Node.TEXT_NODE && node.length >= entry.text.to,
+        "Text metadata addresses browser-coalesced UTF-16 text",
+      );
+    }
+  }
+  const plainHtml = await compiler.compileHtml();
+  check(
+    plainHtml.sourceMap.length === 0,
+    "Plain HTML has no navigation metadata",
+  );
   view = new Preview(host, compiler);
   const first = await compiler.compile();
   check(first.success, JSON.stringify(first.diagnostics));

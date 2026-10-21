@@ -85,6 +85,23 @@ try {
   resolver.dispose();
 }
 
+const htmlSource = await createCompiler({
+  files: { "main.typ": "= Results😀\nA *strong* result." },
+});
+try {
+  const mapped = await htmlSource.compileHtml({ sourceMap: true });
+  assert.ok(mapped.sourceMap.length > 0);
+  assert.match(mapped.html, /data-typst=/);
+  assert.ok(
+    mapped.sourceMap.some(
+      (entry) => entry.location.from === 2 && entry.location.to === 11,
+    ),
+  );
+  assert.deepEqual((await htmlSource.compileHtml()).sourceMap, []);
+} finally {
+  htmlSource.dispose();
+}
+
 // A semantic query alone discovers a package manifest and its entrypoint in
 // separate native passes, even with syntactically incomplete source. No layout.
 const packageSource = '#import "@preview/test:0.1.0": *\n#';

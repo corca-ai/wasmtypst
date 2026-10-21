@@ -229,3 +229,16 @@ Node process peak RSS in fresh processes, separately from observed WASM high
 water. Browser observations cover WASM memory; they do not claim browser-process
 RSS. The default 512 MiB choice supports the qualified full-resolution tutorial
 without changing source images or raising the syntax parser ceiling.
+
+## HTML source provenance
+
+`compileHtml({sourceMap: true})` annotates existing elements with reserved
+`data-typst` identifiers and returns native UTF-16 source spans. Direct Text
+node records include their child index and interval after adjacent text
+coalescing. No wrapper nodes or rendered text are inserted. Source-authored
+reserved attributes are removed before engine identifiers are assigned.
+The index belongs to the HTML revision; normal HTML export has no index and
+keeps its original shape. Hosts validate the actual DOM child/text interval
+and source snapshot before interpreting a printed character as an exact caret.
+Computed/represented output can retain an enclosing native source span instead.
+The index conveys navigation provenance, never write authority or trusted HTML.

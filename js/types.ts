@@ -34,12 +34,21 @@ export interface CompileResult {
   missingFiles: string[];
   fingerprint: string;
 }
+export interface HtmlSourceMapEntry {
+  id: string;
+  location: SourceLocation;
+  /** Direct child Text node and UTF-16 interval, after adjacent text coalescing. */
+  text?: { child: number; from: number; to: number };
+}
 export interface HtmlOptions {
+  /** Annotate existing output elements with revision-bound native source spans. */
+  sourceMap?: boolean;
   /** Return native MathML fragments with exact source locations for visual editors. */
   math?: boolean;
 }
 export interface HtmlResult extends Omit<CompileResult, "pages"> {
   html: string | null;
+  sourceMap?: HtmlSourceMapEntry[];
   /** Untrusted markup. Isolate or sanitize before showing it in a trusted DOM. */
   math: { location: SourceLocation; html: string }[];
 }

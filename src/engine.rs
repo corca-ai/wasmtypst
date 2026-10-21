@@ -35,7 +35,7 @@ pub struct Engine {
     compiled_revision: Option<u32>,
     report: Option<CompileReport>,
     pdf: Option<Vec<u8>>,
-    html: Option<(bool, Value)>,
+    html: Option<(bool, bool, Value)>,
 }
 
 impl Default for Engine {
@@ -126,17 +126,26 @@ impl Engine {
     }
 
     pub fn compile_html_with_math(&mut self, include_math: bool) -> Value {
-        if let Some((cached_math, result)) = &self.html
+        self.compile_html_options(include_math, false)
+    }
+
+    fn compile_html_options(&mut self, include_math: bool, include_source_map: bool) -> Value {
+        if let Some((cached_math, cached_sources, result)) = &self.html
             && *cached_math == include_math
+            && *cached_sources == include_source_map
         {
             return result.clone();
         }
         let result = typst::compile::<typst_html::HtmlDocument>(&self.world);
         let mut diagnostics: Vec<_> = result.warnings.iter().map(|d| self.diagnostic(d)).collect();
         let mut math = Vec::new();
-        let output = result.output.and_then(|doc| {
+        let mut source_map = Vec::new();
+        let output = result.output.and_then(|mut doc| {
             if include_math {
                 self.html_math(&doc, doc.root_node(), &mut math);
+            }
+            if include_source_map {
+                source_map = self.html_source_map(doc.root_mut());
             }
             typst_html::html(&doc, &Default::default())
         });
@@ -163,8 +172,8 @@ impl Engine {
             .collect();
         let report = json!({"revision":self.revision, "success":html.is_some(), "html":html,
             "diagnostics":diagnostics, "dependencies":dependencies, "missingFiles":missing,
-            "fingerprint": self.world.fingerprint(), "math": if html.is_some() { math } else { Vec::new() }});
-        self.html = Some((include_math, report.clone()));
+            "fingerprint": self.world.fingerprint(), "math": if html.is_some() { math } else { Vec::new() }, "sourceMap": if html.is_some() { source_map } else { Vec::new() }});
+        self.html = Some((include_math, include_source_map, report.clone()));
         comemo::evict(10);
         report
     }
@@ -378,7 +387,12 @@ impl Engine {
                     .map(|value| value.as_bool().ok_or("math must be boolean"))
                     .transpose()?
                     .unwrap_or(false);
-                Ok(self.compile_html_with_math(include_math))
+                let include_source_map = request
+                    .get("sourceMap")
+                    .map(|value| value.as_bool().ok_or("sourceMap must be boolean"))
+                    .transpose()?
+                    .unwrap_or(false);
+                Ok(self.compile_html_options(include_math, include_source_map))
             }
             "compile" => Ok(serde_json::to_value(self.compile()).unwrap()),
             "missingFiles" => {
