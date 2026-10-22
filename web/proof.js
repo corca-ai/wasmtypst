@@ -168,6 +168,26 @@ try {
     (await compiler.semanticTokens("main.typ")).length > 0,
     "Semantic tokens failed",
   );
+  const nativeSignature = await compiler.signature(
+    "main.typ",
+    source.indexOf("caption:") + "caption:".length,
+  );
+  const native = nativeSignature?.signatures[0];
+  check(
+    native?.parameters[native.activeParameter]?.label.startsWith("caption"),
+    "Native signature help failed",
+  );
+  const functionSource = '#let join(a, b: "!") = a + b\n#join("Hello", b: "?")';
+  await compiler.putFile("main.typ", functionSource);
+  const userSignature = await compiler.signature(
+    "main.typ",
+    functionSource.lastIndexOf("b:") + 2,
+  );
+  const user = userSignature?.signatures[0];
+  check(
+    user?.parameters[user.activeParameter]?.label === 'b: "!"',
+    "User function signature help failed",
+  );
   await compiler.putFile("main.typ", "#unknown-function()");
   const invalid = await compiler.compile();
   check(
@@ -312,7 +332,7 @@ try {
       coldMs,
       pdfSha256,
       navigation,
-      languageCapabilities: 8,
+      languageCapabilities: 9,
       plugin: true,
       customFont: true,
       html: true,

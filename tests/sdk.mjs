@@ -134,6 +134,15 @@ try {
     "@preview/test:0.1.0/lib.typ",
   );
   assert.ok(await semantic.hover("main.typ", cursor));
+  const signature = await semantic.signature(
+    "main.typ",
+    imported.lastIndexOf("(1") + 1,
+  );
+  assert.equal(
+    signature.signatures[0].parameters[signature.signatures[0].activeParameter]
+      .label,
+    "x",
+  );
   await assert.rejects(
     semantic.rename("main.typ", cursor, "changed"),
     /package/i,

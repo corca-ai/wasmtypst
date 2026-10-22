@@ -63,7 +63,7 @@ try {
         evidence.nodePdfSha256,
         "Browser and Node PDF bytes must match",
       );
-      assert.equal(proof.result.languageCapabilities, 8);
+      assert.equal(proof.result.languageCapabilities, 9);
       assert.equal(proof.result.plugin, true);
       assert.equal(proof.result.customFont, true);
       assert.equal(proof.result.html, true);
