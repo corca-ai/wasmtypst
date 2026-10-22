@@ -100,9 +100,19 @@ fn active_parameter(args: &LinkedNode<'_>, byte: usize, params: &[ParamInfo]) ->
 
 pub fn signature(world: &MemoryWorld, source: &Source, byte: usize, revision: u32) -> Value {
     let root = LinkedNode::new(source.root());
+    let mut byte = byte;
     let Some(mut node) = root.leaf_at(byte, Side::Before) else {
         return Value::Null;
     };
+    // Recovery puts trailing whitespace outside an unfinished call. Walk only
+    // native whitespace back to its boundary; never guess a call from text.
+    while matches!(node.kind(), SyntaxKind::Space | SyntaxKind::Parbreak) && node.offset() > 0 {
+        byte = node.offset();
+        let Some(previous) = root.leaf_at(byte, Side::Before) else {
+            return Value::Null;
+        };
+        node = previous;
+    }
     loop {
         let spans = node
             .cast::<ast::FuncCall>()

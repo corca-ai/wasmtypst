@@ -143,3 +143,25 @@ fn trailing_content_arguments_advance_and_close_using_native_boundaries() {
     let result = signature("#let f(a, b) = a + b\n#f[#text[Done]|][two]");
     assert_eq!(active_label(&result), "a");
 }
+
+#[test]
+fn signature_survives_a_missing_value_and_trailing_space_at_end_of_input() {
+    for (input, expected) in [
+        ("#text(size: |", "size: 11pt"),
+        (
+            "#let greeting(name, ending: \"!\") = name + ending\n#greeting(\"Hi\", ending: |",
+            "ending: \"!\"",
+        ),
+    ] {
+        let result = signature(input);
+        assert!(
+            !result.is_null(),
+            "{:#?}",
+            typst::syntax::Source::detached(input.replace('|', "")).root()
+        );
+        assert_eq!(active_label(&result), expected);
+    }
+    assert!(signature("#text[Done] | ").is_null());
+    let result = signature("#let f(a) = a\n#f( |");
+    assert_eq!(active_label(&result), "a");
+}
