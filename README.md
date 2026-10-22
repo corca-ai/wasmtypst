@@ -64,12 +64,28 @@ an optional explicit `[year, month, day]`. There is no implicit system clock.
 await compiler.putFile('main.typ', '#let answer=42\n#answer');
 const hover = await compiler.hover('main.typ', 19);
 const completion = await compiler.completion('main.typ', 19);
+const signature = await compiler.signature('main.typ', 19);
 const definition = await compiler.definition('main.typ', 19);
 const references = await compiler.references('main.typ', 19);
 const rename = await compiler.rename('main.typ', 19, 'result');
 const formatting = await compiler.format('main.typ');
 const tokens = await compiler.semanticTokens('main.typ');
 ```
+
+`signature(path, offset)` returns native function parameters, documentation and
+an active parameter for code and math calls, including incomplete argument lists.
+It supports built-ins and traced user closures, including imported functions.
+Named arguments, nested calls and variadic parameters use the native AST.
+A spread or two-dimensional math row can make the active positional parameter unknown (`null`) while the
+signature remains useful. Pre-applied `.with(...)` functions and unresolved or
+unexecuted callees return `null`: Typst does not expose corrected bound-argument
+metadata, and the SDK does not guess from names or formatted function strings.
+The result carries the current revision and never edits the document.
+
+Diagnostics retain the legacy `trace` strings and additionally expose
+`traceDetails`: readable native messages with nullable source locations. These
+locations use the same authorized World and UTF-16 coordinates as the primary
+diagnostic, including calls from imported project files.
 
 All offsets are UTF-16 code units. Rename and formatting return source edits;
 the host applies them to its shared text and sends the resulting file back.

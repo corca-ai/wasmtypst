@@ -14,6 +14,7 @@ import type {
   PagePoint,
   Query,
   SemanticToken,
+  SignatureHelp,
   SourceLocation,
   Symbol,
   Transport,
@@ -277,6 +278,9 @@ export class Compiler {
   }
   completion(path: string, offset: number): Promise<Completions> {
     return this.#language({ op: "completion", path, offset });
+  }
+  signature(path: string, offset: number): Promise<SignatureHelp | null> {
+    return this.#language({ op: "signature", path, offset });
   }
   hover(path: string, offset: number): Promise<Hover | null> {
     return this.#language({ op: "hover", path, offset });

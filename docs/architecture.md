@@ -60,6 +60,15 @@ answer/error. The same 64-round, attempted-path, epoch, deadline and disposal
 fences apply as compilation. No language query edits source; admitting dependencies
 advances the revision and invalidates previous output, which hosts must refresh.
 
+Signature help traces the callee in that same World and uses native parameter
+metadata and argument-list AST boundaries. Exact function identity confirms
+user closures are unbound; `.with(...)` wrappers are refused because upstream
+`Func::params` does not adjust their parameter metadata. Unknown spread counts and two-dimensional math row grouping
+leave the active positional parameter null; named parameters remain identifiable. No global-name fallback guesses through local
+shadowing. Untraced callees have no signature help. Code and math calls use their respective native AST forms.
+Diagnostics expose structured trace messages and nullable native span locations
+alongside the original trace string array, for both PDF and HTML compilation.
+
 Formatting uses Typstyle and refuses syntactically invalid documents. Tokens
 classify the actual syntax tree, rather than applying regexes to source.
 Symbols and folding expose source ranges. They are editor-neutral data; the
@@ -107,7 +116,7 @@ the Node, browser and packed-package tests. Byte-identical builds across host
 platforms are not promised.
 
 The browser proof covers five bidirectional navigation cases, actual SVG image
-paint, eight language capabilities, a package WASM plugin, revision refusal,
+paint, nine language capabilities, a package WASM plugin, revision refusal,
 and a synthetic 100-source-file project exceeding 1 MiB. Warm measurements
 discard setup and record 20 samples. Cold startup is a single observation per
 browser, not a p95 claim. Linear-memory size is supplementary and excludes host

@@ -73,6 +73,47 @@ export function registerMonaco(
     }),
   );
   disposables.push(
+    monaco.languages.registerSignatureHelpProvider("typst", {
+      signatureHelpTriggerCharacters: ["(", ",", ":"],
+      signatureHelpRetriggerCharacters: [")"],
+      async provideSignatureHelp(model, position, token) {
+        const version = model.getVersionId();
+        const result = await compiler.signature(
+          path(model.uri),
+          model.getOffsetAt(position),
+        );
+        if (
+          !result ||
+          model.isDisposed() ||
+          token.isCancellationRequested ||
+          version !== model.getVersionId()
+        )
+          return null;
+        return {
+          value: {
+            signatures: result.signatures.map((signature) => ({
+              label: signature.label,
+              ...(signature.documentation === null
+                ? {}
+                : { documentation: signature.documentation }),
+              parameters: signature.parameters.map((parameter) => ({
+                label: parameter.label,
+                ...(parameter.documentation === null
+                  ? {}
+                  : { documentation: parameter.documentation }),
+              })),
+              activeParameter: signature.activeParameter ?? -1,
+            })),
+            activeSignature: result.activeSignature,
+            activeParameter:
+              result.signatures[result.activeSignature]?.activeParameter ?? -1,
+          },
+          dispose() {},
+        };
+      },
+    }),
+  );
+  disposables.push(
     monaco.languages.registerHoverProvider("typst", {
       async provideHover(model, position, token) {
         const version = model.getVersionId();

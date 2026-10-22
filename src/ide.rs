@@ -83,6 +83,12 @@ impl Engine {
         };
         let (source, byte) = self.source(path, cursor)?;
         match op {
+            "signature" => Ok(crate::signature::signature(
+                &self.world,
+                &source,
+                byte,
+                self.revision,
+            )),
             "completion" => Ok(
                 match typst_ide::autocomplete(&self.world, self.ide_document(), &source, byte, true)
                 {

@@ -359,7 +359,11 @@ impl Engine {
             .and_then(|id| self.world.range(d.span).and_then(|r| self.location(id, r)));
         json!({ "severity": format!("{:?}", d.severity).to_lowercase(), "message": d.message,
             "hints": d.hints.iter().map(|h| h.v.as_str()).collect::<Vec<_>>(), "location": location,
-            "trace": d.trace.iter().map(|t| format!("{:?}", t.v)).collect::<Vec<_>>() })
+            "trace": d.trace.iter().map(|t| format!("{:?}", t.v)).collect::<Vec<_>>(),
+            "traceDetails": d.trace.iter().map(|t| json!({
+                "message": t.v.to_string(),
+                "location": t.span.id().and_then(|id| self.world.range(t.span).and_then(|range| self.location(id, range)))
+            })).collect::<Vec<_>>() })
     }
 
     pub fn source(&self, path: &str, offset: usize) -> Result<(Source, usize), String> {

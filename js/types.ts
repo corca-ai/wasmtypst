@@ -23,6 +23,7 @@ export interface Diagnostic {
   message: string;
   hints: string[];
   trace: string[];
+  traceDetails: { message: string; location: SourceLocation | null }[];
   location: SourceLocation | null;
 }
 export interface CompileResult {
@@ -70,6 +71,22 @@ export interface Completions {
 export interface Hover {
   kind: "text" | "code";
   text: string;
+}
+export interface SignatureParameter {
+  label: string;
+  documentation: string | null;
+}
+export interface Signature {
+  label: string;
+  documentation: string | null;
+  parameters: SignatureParameter[];
+  /** Null when a spread makes the positional argument unknowable. */
+  activeParameter: number | null;
+}
+export interface SignatureHelp {
+  revision: number;
+  signatures: Signature[];
+  activeSignature: number;
 }
 export interface Edit extends SourceLocation {
   text: string;
@@ -119,7 +136,7 @@ export type Query =
   | ({ op: "compileHtml" } & HtmlOptions)
   | ({ op: "configure" } & Configuration)
   | {
-      op: "completion" | "hover" | "definition" | "references";
+      op: "completion" | "hover" | "definition" | "references" | "signature";
       path: string;
       offset: number;
     }
