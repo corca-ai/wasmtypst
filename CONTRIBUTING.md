@@ -1,6 +1,6 @@
 # Contributing
 
-Use Bun 1.3.14, Node 24+, Rust 1.96.0 and wasm-bindgen-cli 0.2.128.
+Use Bun 1.4.4, Node 24+, Rust 1.96.0 and wasm-bindgen-cli 0.2.128.
 Read AGENTS.md and docs/architecture.md. Run `bun install --frozen-lockfile`,
 `bun run build`, `bunx playwright install chromium firefox webkit` and
 `bun run check` before submitting a pull request. `bun run benchmark` records

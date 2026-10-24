@@ -143,7 +143,7 @@ models to be open; the core edit plan also supports unopened files. Call
 
 ## Development
 
-Install Rust 1.96.0, wasm-bindgen-cli 0.2.128 and Bun 1.3.14. The Rust toolchain
+Install Rust 1.96.0, wasm-bindgen-cli 0.2.128 and Bun 1.4.4. The Rust toolchain
 file includes the WASM target. Tests use Node 24+ and Playwright's three engines.
 
 ```sh
