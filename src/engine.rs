@@ -20,6 +20,7 @@ pub struct CompileReport {
     pub dependencies: Vec<String>,
     pub missing_files: Vec<String>,
     pub fingerprint: String,
+    pub references: Vec<Value>,
 }
 
 #[derive(Clone, Serialize)]
@@ -140,7 +141,9 @@ impl Engine {
         let mut diagnostics: Vec<_> = result.warnings.iter().map(|d| self.diagnostic(d)).collect();
         let mut math = Vec::new();
         let mut source_map = Vec::new();
+        let mut references = Vec::new();
         let output = result.output.and_then(|mut doc| {
+            references = self.html_references(&doc);
             if include_math {
                 self.html_math(&doc, doc.root_node(), &mut math);
             }
@@ -172,7 +175,7 @@ impl Engine {
             .collect();
         let report = json!({"revision":self.revision, "success":html.is_some(), "html":html,
             "diagnostics":diagnostics, "dependencies":dependencies, "missingFiles":missing,
-            "fingerprint": self.world.fingerprint(), "math": if html.is_some() { math } else { Vec::new() }, "sourceMap": if html.is_some() { source_map } else { Vec::new() }});
+            "fingerprint": self.world.fingerprint(), "references": if html.is_some() { references } else { Vec::new() }, "math": if html.is_some() { math } else { Vec::new() }, "sourceMap": if html.is_some() { source_map } else { Vec::new() }});
         self.html = Some((include_math, include_source_map, report.clone()));
         comemo::evict(10);
         report
@@ -301,6 +304,10 @@ impl Engine {
             diagnostics,
             dependencies,
             missing_files,
+            references: document
+                .as_ref()
+                .map(|doc| self.paged_references(doc))
+                .unwrap_or_default(),
             fingerprint: self.world.fingerprint(),
         };
         self.document = document;

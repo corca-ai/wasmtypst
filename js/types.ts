@@ -26,6 +26,15 @@ export interface Diagnostic {
   traceDetails: { message: string; location: SourceLocation | null }[];
   location: SourceLocation | null;
 }
+/** A native, revision-bound reference occurrence and its printed text. */
+export interface RenderedReference {
+  keys: string[];
+  kind: "reference" | "citation";
+  source: SourceLocation;
+  target: SourceLocation | null;
+  text: string;
+}
+
 export interface CompileResult {
   revision: number;
   success: boolean;
@@ -34,6 +43,7 @@ export interface CompileResult {
   dependencies: string[];
   missingFiles: string[];
   fingerprint: string;
+  references: RenderedReference[];
 }
 export interface HtmlSourceMapEntry {
   id: string;

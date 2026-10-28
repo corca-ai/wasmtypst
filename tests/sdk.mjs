@@ -260,6 +260,41 @@ try {
   core.dispose();
 }
 assert.throws(() => core.execute({ kind: "stats" }), /disposed/);
+// Reference presentation survives the Worker protocol with the same revision.
+const referenceSource =
+  '#set heading(numbering: "1.")\n= Intro <intro>\n😀 @intro. See @one @two.\n#bibliography("refs.bib", style: "ieee")';
+const referenced = await createCompiler({
+  files: {
+    "main.typ": referenceSource,
+    "refs.bib":
+      "@article{one,title={A},year={2024}}\n@article{two,title={B},year={2023}}",
+  },
+});
+try {
+  for (const output of [
+    await referenced.compile(),
+    await referenced.compileHtml(),
+  ]) {
+    assert.equal(output.success, true, JSON.stringify(output.diagnostics));
+    const reference = output.references.find(
+      (entry) => entry.kind === "reference",
+    );
+    const group = output.references.find((entry) => entry.kind === "citation");
+    assert.deepEqual(reference.keys, ["intro"]);
+    assert.match(reference.text, /1/);
+    assert.equal(reference.target.path, "main.typ");
+    assert.deepEqual(group.keys, ["one", "two"]);
+    assert.equal(
+      referenceSource.slice(group.source.from, group.source.to),
+      "@one @two",
+    );
+    assert.match(group.text, /2/);
+  }
+  await referenced.putFile("main.typ", "@missing");
+  assert.deepEqual((await referenced.compile()).references, []);
+} finally {
+  referenced.dispose();
+}
 console.log(
   "SDK: Node worker, direct core, project isolation, package/plugin resolution, diagnostics, stale output, language queries and loop diagnostics and worker deadline passed.",
 );

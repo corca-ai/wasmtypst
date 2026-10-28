@@ -1,6 +1,7 @@
 mod engine;
 mod html_source;
 mod ide;
+mod references;
 mod signature;
 mod wasm;
 pub mod world;
