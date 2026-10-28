@@ -251,3 +251,14 @@ keeps its original shape. Hosts validate the actual DOM child/text interval
 and source snapshot before interpreting a printed character as an exact caret.
 Computed/represented output can retain an enclosing native source span instead.
 The index conveys navigation provenance, never write authority or trusted HTML.
+
+## Reference presentation
+
+Native reference and citation tags delimit the actual plain text in each output.
+The SDK returns their UTF-16 source spans, keys and nullable resolved target spans
+with the compile revision. Citation groups retain all child keys and their source
+range; a combined label is never assigned to only its first key. Groups spanning
+multiple source files and repeated output from one source span are omitted.
+PDF and HTML keep independent presentations. No host parser, counter estimation,
+HTML scraping or editor state participates. Failed compilation exposes no records;
+any effective input mutation invalidates their source evidence like navigation.

@@ -349,3 +349,17 @@ larger profiles, including custom WASM loading buffers, code and Worker overhead
 This is not a browser-process measurement or a low-memory-device guarantee.
 The 256 MiB failure remains in the comparison matrix; it is no longer a failure
 of the default compiler on this fixture.
+
+## Reference presentation
+
+Successful `compile()` and `compileHtml()` results include `references`: native
+reference/citation occurrences with `{ keys, kind, source, target, text }`. `source`
+and nullable `target` use the existing UTF-16 `SourceLocation` contract; `text`
+is the plain text enclosed by the actual output's native reference tags, including
+show rules and supplements. Native citation groups retain their complete key list
+and source range rather than attributing a combined label to one citation. PDF and HTML results own separate presentations.
+Repeated output from the same source span is omitted because a single inline
+hint cannot faithfully represent it. Failed compilations return an empty list.
+These records are valid only with the result's source revision and fingerprint;
+they convey neither edit authority nor trusted HTML. The host owns inspection,
+number annotations and native navigation.
