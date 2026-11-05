@@ -322,6 +322,29 @@ try {
 } finally {
   mathCompiler.dispose();
 }
+const aliasMain = '#import "lib.typ": greet as hi\n#hi(2)\n$hi(3)$';
+const aliasLib = "#let greet(name) = [Hi #name]";
+const aliasCompiler = await createCompiler({
+  entry: "main.typ",
+  files: { "main.typ": aliasMain, "lib.typ": aliasLib },
+});
+try {
+  const plan = await aliasCompiler.rename(
+    "main.typ",
+    aliasMain.lastIndexOf("hi") + 1,
+    "welcome",
+  );
+  assert.equal(plan.edits.length, 3);
+  assert.ok(plan.edits.every((edit) => edit.path === "main.typ"));
+  let changed = aliasMain;
+  for (const edit of [...plan.edits].reverse())
+    changed = changed.slice(0, edit.from) + edit.text + changed.slice(edit.to);
+  assert.equal(changed, aliasMain.replaceAll("hi", "welcome"));
+  await aliasCompiler.putFile("main.typ", changed);
+  assert.equal((await aliasCompiler.compile()).success, true);
+} finally {
+  aliasCompiler.dispose();
+}
 console.log(
   "SDK: Node worker, direct core, project isolation, package/plugin resolution, diagnostics, stale output, language queries and loop diagnostics and worker deadline passed.",
 );

@@ -352,6 +352,31 @@ try {
     }
     check(refused, `Unsafe math rename to ${name} was accepted`);
   }
+  const aliasMain = '#import "alias-lib.typ": greet as hi\n#hi(2)\n$hi(3)$';
+  await compiler.putFile("alias-lib.typ", "#let greet(name) = [Hi #name]");
+  await compiler.putFile("main.typ", aliasMain);
+  const aliasPlan = await compiler.rename(
+    "main.typ",
+    aliasMain.lastIndexOf("hi") + 1,
+    "welcome",
+  );
+  check(
+    aliasPlan.edits.length === 3 &&
+      aliasPlan.edits.every((edit) => edit.path === "main.typ"),
+    "Alias rename crossed the export binding",
+  );
+  let renamedAlias = aliasMain;
+  for (const edit of [...aliasPlan.edits].reverse())
+    renamedAlias =
+      renamedAlias.slice(0, edit.from) +
+      edit.text +
+      renamedAlias.slice(edit.to);
+  check(
+    renamedAlias === aliasMain.replaceAll("hi", "welcome"),
+    "Alias rename plan changed unrelated source",
+  );
+  await compiler.putFile("main.typ", renamedAlias);
+  check((await compiler.compile()).success, "Alias rename did not recompile");
   window.proof = {
     done: true,
     result: {

@@ -56,6 +56,10 @@ identifier, such as a single letter or a hyphenated name; changing math call
 syntax to a code call can also change its argument semantics. Rename returns a
 revision-bound edit plan, respects lexical shadowing, refuses package edits,
 and conservatively rejects names that could collide with existing identifiers.
+A renamed import has its own local binding: renaming it preserves the exported
+declaration, while renaming the export updates original import path components
+and preserves local aliases. Reexports resolve through the exporting module's
+native top-level scope. Definition navigation still follows the original export.
 It supports identifier bindings, including imports; it does not rename labels
 or arbitrary textual occurrences. Semantic queries (completion, hover,
 definition, references and rename) resolve native World misses through the same
