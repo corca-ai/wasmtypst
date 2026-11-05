@@ -326,6 +326,32 @@ try {
   await loaded;
   check(frame.contentDocument === null, "HTML preview must have opaque origin");
   check(window.untrustedExecuted !== true, "HTML script escaped sandbox");
+  const mathSource = "\uFEFF// 😀\r\n#let factor = 2\r\n$factor + factor$";
+  await compiler.putFile("main.typ", mathSource);
+  const mathCursor = mathSource.lastIndexOf("factor") + 1;
+  check(
+    (await compiler.definition("main.typ", mathCursor))?.from ===
+      mathSource.indexOf("factor"),
+    "Math definition failed",
+  );
+  check(
+    (await compiler.references("main.typ", mathCursor)).length === 3,
+    "Math references failed",
+  );
+  check(
+    (await compiler.rename("main.typ", mathCursor, "magnitude")).edits
+      .length === 3,
+    "Math rename failed",
+  );
+  for (const name of ["x", "long-name"]) {
+    let refused = false;
+    try {
+      await compiler.rename("main.typ", mathCursor, name);
+    } catch (error) {
+      refused = String(error).includes("native math identifier");
+    }
+    check(refused, `Unsafe math rename to ${name} was accepted`);
+  }
   window.proof = {
     done: true,
     result: {

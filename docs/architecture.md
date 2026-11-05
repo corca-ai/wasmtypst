@@ -47,7 +47,13 @@ viewer can use the identical point API without any dependency on Preview.
 
 Completion, hover and definition call typst-ide against the same World and only
 use a compiled document when its revision is current. References compare
-resolved definition spans across admitted source files. Rename returns a
+resolved definition spans across admitted source files, including native math
+identifiers and imported or closure-bound names. Math uses Typst's scoped
+named-item resolution; a field member is not treated as an unrelated lexical
+identifier. These queries do not require paginated layout. Rename refuses a
+replacement that is valid in code but would stop being one native math
+identifier, such as a single letter or a hyphenated name; changing math call
+syntax to a code call can also change its argument semantics. Rename returns a
 revision-bound edit plan, respects lexical shadowing, refuses package edits,
 and conservatively rejects names that could collide with existing identifiers.
 It supports identifier bindings, including imports; it does not rename labels

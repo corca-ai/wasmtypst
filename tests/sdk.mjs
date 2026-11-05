@@ -295,6 +295,33 @@ try {
 } finally {
   referenced.dispose();
 }
+const mathSource = "\uFEFF// 😀\r\n#let factor = 2\r\n$factor + factor$";
+const mathCompiler = await createCompiler({
+  files: { "main.typ": mathSource },
+});
+try {
+  const cursor = mathSource.lastIndexOf("factor") + 1;
+  assert.equal(
+    (await mathCompiler.definition("main.typ", cursor))?.from,
+    mathSource.indexOf("factor"),
+  );
+  assert.equal((await mathCompiler.references("main.typ", cursor)).length, 3);
+  for (const name of ["x", "long-name"])
+    await assert.rejects(
+      mathCompiler.rename("main.typ", cursor, name),
+      /native math identifier/,
+    );
+  const plan = await mathCompiler.rename("main.typ", cursor, "magnitude");
+  assert.equal(plan.edits.length, 3);
+  let changed = mathSource;
+  for (const edit of [...plan.edits].reverse())
+    changed = changed.slice(0, edit.from) + edit.text + changed.slice(edit.to);
+  assert.equal(changed, mathSource.replaceAll("factor", "magnitude"));
+  await mathCompiler.putFile("main.typ", changed);
+  assert.equal((await mathCompiler.compile()).success, true);
+} finally {
+  mathCompiler.dispose();
+}
 console.log(
   "SDK: Node worker, direct core, project isolation, package/plugin resolution, diagnostics, stale output, language queries and loop diagnostics and worker deadline passed.",
 );

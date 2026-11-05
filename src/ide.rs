@@ -3,7 +3,7 @@ use serde_json::{Value, json};
 use typst::WorldExt;
 use typst::syntax::ast::AstNode;
 use typst::syntax::{LinkedNode, Side, Source, Span, SyntaxKind, ast};
-use typst_ide::{Definition, Tooltip};
+use typst_ide::{Definition, NamedItem, Tooltip};
 
 fn leaves<'a>(node: LinkedNode<'a>, out: &mut Vec<LinkedNode<'a>>) {
     if node.children().next().is_none() {
@@ -15,11 +15,40 @@ fn leaves<'a>(node: LinkedNode<'a>, out: &mut Vec<LinkedNode<'a>>) {
     }
 }
 
+struct SourceReferences {
+    locations: Vec<Value>,
+    has_math_identifiers: bool,
+}
+
 impl Engine {
+    fn definition_at(&self, source: &Source, byte: usize) -> Option<Definition> {
+        typst_ide::definition(&self.world, self.ide_document(), source, byte, Side::After).or_else(
+            || {
+                let leaf = LinkedNode::new(source.root()).leaf_at(byte, Side::After)?;
+                let wanted = leaf.cast::<ast::MathIdent>()?.get();
+                // A field is resolved through its value, never as a lexical name.
+                if leaf
+                    .parent()
+                    .and_then(|node| node.cast::<ast::MathFieldAccess>())
+                    .is_some_and(|access| access.field().span() == leaf.span())
+                {
+                    return None;
+                }
+                typst_ide::named_items(&self.world, leaf.clone(), |item| {
+                    let (name, span) = match item {
+                        NamedItem::Var(ident) | NamedItem::Fn(ident) => (ident.get(), ident.span()),
+                        NamedItem::Module(name, span, _) | NamedItem::Import(name, span, _) => {
+                            (name, span)
+                        }
+                    };
+                    (name == wanted).then_some(Definition::Span(span))
+                })
+            },
+        )
+    }
+
     fn definition_span(&self, source: &Source, byte: usize) -> Option<Span> {
-        if let Some(Definition::Span(span)) =
-            typst_ide::definition(&self.world, self.ide_document(), source, byte, Side::After)
-        {
+        if let Some(Definition::Span(span)) = self.definition_at(source, byte) {
             return Some(span);
         }
         let leaf = LinkedNode::new(source.root()).leaf_at(byte, Side::After)?;
@@ -47,13 +76,14 @@ impl Engine {
         self.current(self.revision).ok()
     }
 
-    fn references_to(&self, target: Span) -> Vec<Value> {
+    fn references_to(&self, target: Span) -> SourceReferences {
         let mut result = Vec::new();
+        let mut has_math_identifiers = false;
         for source in self.world.parsed_sources() {
             let mut nodes = Vec::new();
             leaves(LinkedNode::new(source.root()), &mut nodes);
             for node in nodes {
-                if node.kind() != SyntaxKind::Ident {
+                if !matches!(node.kind(), SyntaxKind::Ident | SyntaxKind::MathIdent) {
                     continue;
                 }
                 if (node.span() == target
@@ -61,6 +91,7 @@ impl Engine {
                     && let Some(location) = self.location(source.id(), node.range())
                 {
                     result.push(location);
+                    has_math_identifiers |= node.kind() == SyntaxKind::MathIdent;
                 }
             }
         }
@@ -70,7 +101,10 @@ impl Engine {
                 .cmp(&b["path"].as_str())
                 .then(a["from"].as_u64().cmp(&b["from"].as_u64()))
         });
-        result
+        SourceReferences {
+            locations: result,
+            has_math_identifiers,
+        }
     }
 
     pub fn ide_request(&mut self, request: &Value) -> Result<Value, String> {
@@ -111,26 +145,18 @@ impl Engine {
                     None => Value::Null,
                 },
             ),
-            "definition" => Ok(
-                match typst_ide::definition(
-                    &self.world,
-                    self.ide_document(),
-                    &source,
-                    byte,
-                    Side::After,
-                ) {
-                    Some(Definition::Span(span)) => span
-                        .id()
-                        .and_then(|id| {
-                            self.world
-                                .range(span)
-                                .and_then(|range| self.location(id, range))
-                        })
-                        .unwrap_or(Value::Null),
-                    Some(Definition::File(id)) => json!({"path": path_for(id), "from": 0, "to": 0}),
-                    _ => Value::Null,
-                },
-            ),
+            "definition" => Ok(match self.definition_at(&source, byte) {
+                Some(Definition::Span(span)) => span
+                    .id()
+                    .and_then(|id| {
+                        self.world
+                            .range(span)
+                            .and_then(|range| self.location(id, range))
+                    })
+                    .unwrap_or(Value::Null),
+                Some(Definition::File(id)) => json!({"path": path_for(id), "from": 0, "to": 0}),
+                _ => Value::Null,
+            }),
             "references" | "rename" => {
                 let Some(target) = self.definition_span(&source, byte) else {
                     return if op == "references" {
@@ -139,7 +165,8 @@ impl Engine {
                         Err("No renameable identifier at this position".into())
                     };
                 };
-                let references = self.references_to(target);
+                let found = self.references_to(target);
+                let references = found.locations;
                 if op == "references" {
                     return Ok(json!(references));
                 }
@@ -160,6 +187,18 @@ impl Engine {
                 {
                     return Err("newName is not a valid Typst identifier".into());
                 }
+                if found.has_math_identifiers {
+                    let math = Source::detached(format!("${name}$"));
+                    let mut math_tokens = Vec::new();
+                    leaves(LinkedNode::new(math.root()), &mut math_tokens);
+                    if math.root().diagnosis().errors
+                        || !math_tokens.iter().any(|node| {
+                            node.kind() == SyntaxKind::MathIdent && node.get().leaf_text() == name
+                        })
+                    {
+                        return Err("newName is not a native math identifier".into());
+                    }
+                }
                 if references
                     .iter()
                     .any(|r| r["path"].as_str().is_some_and(|p| p.starts_with('@')))
@@ -172,7 +211,7 @@ impl Engine {
                     let mut nodes = Vec::new();
                     leaves(LinkedNode::new(src.root()), &mut nodes);
                     if nodes.iter().any(|n| {
-                        n.kind() == SyntaxKind::Ident
+                        matches!(n.kind(), SyntaxKind::Ident | SyntaxKind::MathIdent)
                             && n.get().leaf_text() == name
                             && self.definition_span(src, n.offset()) != Some(target)
                     }) {
